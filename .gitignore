@@ -102,3 +102,4 @@ ENV/
 
 # Pycharm
 .idea/
+P1/__init__.py
