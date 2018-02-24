@@ -19,4 +19,10 @@ class Agent(object):
 
         return vels
 
+    def get_bound_ang(self, agent_b):
+        """ Returns the left and right boundries given agent a traveling and agent b being and obstacle. """
+        self.pos
+
+        return ang_right, ang_left
+
 
