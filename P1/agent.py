@@ -21,7 +21,8 @@ class Agent(object):
 
     def get_bound_ang(self, agent_b):
         """ Returns the left and right boundries given agent a traveling and agent b being and obstacle. """
-        self.pos
+        vec_ab = agent_b.pos - self.pos
+        theta = math.atan2()
 
         return ang_right, ang_left
 
