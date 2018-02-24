@@ -23,4 +23,35 @@ class TestVel_ang_ok(TestCase):
         self.assertFalse(vel_ang_ok(math.atan2(1, 2), math.atan2(2, 1), math.atan2(1, 2)))
         self.assertFalse(vel_ang_ok(math.atan2(1, 2), math.atan2(2, 1), math.atan2(2, 1)))
 
+        # Left larger than right in the third quadrant
+        self.assertFalse(vel_ang_ok(math.atan2(-1, -3), math.atan2(-2, -1), math.atan2(-1, -1)))
+        self.assertTrue(vel_ang_ok(math.atan2(-1, -3), math.atan2(-2, -1), math.atan2(1, -1)))
+        self.assertTrue(vel_ang_ok(math.atan2(-1, -3), math.atan2(-2, -1), math.atan2(-1, 1)))
+        self.assertTrue(vel_ang_ok(math.atan2(-1, -3), math.atan2(-2, -1), math.atan2(1, 1)))
+
+        # Right larger then left in the third quadrant
+        self.assertTrue(vel_ang_ok(math.atan2(-2, -1), math.atan2(-1, -3), math.atan2(-1, -1)))
+        self.assertFalse(vel_ang_ok(math.atan2(-2, -1), math.atan2(-1, -3), math.atan2(1, -1)))
+        self.assertFalse(vel_ang_ok(math.atan2(-2, -1), math.atan2(-1, -3), math.atan2(-1, 1)))
+        self.assertFalse(vel_ang_ok(math.atan2(-2, -1), math.atan2(-1, -3), math.atan2(1, 1)))
+
+        # Right in second quadrant, left in third quadrant
+        self.assertFalse(vel_ang_ok(math.atan2(1, -3), math.atan2(-1, -3), math.atan2(1, -4)))
+        self.assertFalse(vel_ang_ok(math.atan2(1, -3), math.atan2(-1, -3), math.atan2(-1, -4)))
+        self.assertTrue(vel_ang_ok(math.atan2(1, -3), math.atan2(-1, -3), math.atan2(-3, -1)))
+        self.assertTrue(vel_ang_ok(math.atan2(1, -3), math.atan2(-1, -3), math.atan2(-4, 1)))
+        self.assertTrue(vel_ang_ok(math.atan2(1, -3), math.atan2(-1, -3), math.atan2(1, 4)))
+        self.assertTrue(vel_ang_ok(math.atan2(1, -3), math.atan2(-1, -3), math.atan2(4, -1)))
+
+        # Left in second quadrant, right in third quadrant
+        self.assertTrue(vel_ang_ok(math.atan2(-1, -3), math.atan2(1, -3), math.atan2(1, -4)))
+        self.assertTrue(vel_ang_ok(math.atan2(-1, -3), math.atan2(1, -3), math.atan2(-1, -4)))
+        self.assertFalse(vel_ang_ok(math.atan2(-1, -3), math.atan2(1, -3), math.atan2(-3, -1)))
+        self.assertFalse(vel_ang_ok(math.atan2(-1, -3), math.atan2(1, -3), math.atan2(-4, 1)))
+        self.assertFalse(vel_ang_ok(math.atan2(-1, -3), math.atan2(1, -3), math.atan2(1, 4)))
+        self.assertFalse(vel_ang_ok(math.atan2(-1, -3), math.atan2(1, -3), math.atan2(4, -1)))
+
+
+
+
 
