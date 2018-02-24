@@ -5,7 +5,7 @@ import math
 
 
 class TestAgent(TestCase):
-    agent = Agent(np.array([1, 1], np.array[2, 2]))
+    agent = Agent(np.array([1, 1], np.array[2, 2]), 2)
 
     def test_distance_to(self):
         self.fail()
