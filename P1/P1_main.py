@@ -14,16 +14,15 @@ def plot_agents(agents):
     plt.plot(35, 35, "o")
     for agent in agents:
         plt.plot(agent.pos[0], agent.pos[1], "o")
-
     plt.pause(0.05)
 
 
 def collisions(agents):
-    for i in range(len(agents)):
-        for j in range(len(agents)):
-            if i != j:
-                if np.linalg.norm(agents[i].pos - agents[j].pos) < 1:
-                    print("KOLLISION MELLAN AGENT ", str(i)," OCH AGENT ", str(j))
+    for i in range(len(agents)-1):
+        j = i+1
+        if i != j:
+            if np.linalg.norm(agents[i].pos - agents[j].pos) < 1:
+                print("KOLLISION MELLAN AGENT ", str(i)," OCH AGENT ", str(j))
 
 left = math.atan2(-1, -3)
 right = math.atan2(-2, -1)
@@ -36,18 +35,18 @@ dt = the_map.vehicle_dt
 radius = 0.5
 #print(vel_ang_ok(right, left, vel))
 
-neighbor_limit = vmax * dt * 30
+neighbor_limit = vmax * dt * 50 + radius * 2
 
 # -------- Creates the agents and stores them in list
 agents = []
-for i in range(len(the_map.start_positions) - 15):
+for i in range(len(the_map.start_positions)):
     agents.append(Agent(i, np.array(the_map.start_positions[i]), np.array(the_map.goal_positions[i]), radius))
 
 # -------- Loops through the agents and finds their new position
 agents_not_at_goal = True
 
 # --------- plots the agents
-plot_agents(agents)
+#plot_agents(agents)
 
 #start_fig = plt.figure()
 #ax = start_fig.add_subplot(1,1,1)
@@ -58,6 +57,7 @@ plot_agents(agents)
 while agents_not_at_goal:
     num_agents_at_goal = 0
     pos_differences = []
+    new_vels = []
     #print(len(agents))
     for agent in agents:
         if agent.pos[0] == agent.goal[0] and agent.pos[1] == agent.goal[1]: # If an agents already is on goal we do not want to change its position
@@ -77,13 +77,16 @@ while agents_not_at_goal:
         #    continue
         pos_change = new_vel * dt
         pos_differences.append(pos_change)
+        new_vels.append(new_vel)
+        #plt.show()
 
     for i in range(len(agents)):
         agents[i].pos += pos_differences[i]
-    plot_agents(agents)
+        agents[i].vel = new_vels[i]
+    #plot_agents(agents)
     if num_agents_at_goal == len(agents):
         agents_not_at_goal = False
     #print(num_agents_at_goal)
     collisions(agents)
-plt.show()
+#plt.show()
 
