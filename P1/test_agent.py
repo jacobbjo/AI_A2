@@ -5,19 +5,19 @@ import math
 
 
 class TestAgent(TestCase):
-    agent = Agent(np.array([1, 1], np.array[2, 2]), 2)
+    agent = Agent(np.array([1, 1]), np.array([2, 2]), 2)
 
-    def test_distance_to(self):
-        self.fail()
+   #def test_distance_to(self):
+   #    self.fail()
 
-    def test_find_best_vel(self):
-        self.fail()
+   #def test_find_best_vel(self):
+   #    self.fail()
 
-    def test_get_bound_ang(self):
-        self.fail()
+   #def test_get_bound_ang(self):
+   #    self.fail()
 
-    def test_get_avoidance_vels(self):
-        self.fail()
+   #def test_get_avoidance_vels(self):
+   #    self.fail()
 
     def test_vel_ang_ok(self):
         # Left larger then right in the first quadrant
@@ -65,3 +65,9 @@ class TestAgent(TestCase):
         self.assertFalse(self.agent.vel_ang_ok(math.atan2(-1, -3), math.atan2(1, -3), math.atan2(-4, 1)))
         self.assertFalse(self.agent.vel_ang_ok(math.atan2(-1, -3), math.atan2(1, -3), math.atan2(1, 4)))
         self.assertFalse(self.agent.vel_ang_ok(math.atan2(-1, -3), math.atan2(1, -3), math.atan2(4, -1)))
+
+        # Left larger than right in
+        self.assertTrue(self.agent.vel_ang_ok(math.atan2(-1, 2), math.atan2(1, 2), math.atan2(1, 0)))
+        self.assertFalse(self.agent.vel_ang_ok(math.atan2(-1, 2), math.atan2(1, 2), math.atan2(0, 1)))
+        self.assertTrue(self.agent.vel_ang_ok(-0.5915921517645543, 2.5232232975452504, -3.141592653589793))
+

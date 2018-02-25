@@ -17,6 +17,8 @@ class Agent(object):
         return np.linalg.norm(self.pos - point)
 
     def vel_ang_ok(self, right_ang, left_ang, vel_ang):
+
+
         """ Checks if the velocity is allowed given right and left boundaries """
 
         if right_ang > left_ang:
@@ -53,14 +55,13 @@ class Agent(object):
     def vel_ang_ok_neigh(self, test_vel, neighbors, bound_angs):
         """ Returns if the tested velocity is valid given all the neighbors bounding angles"""
 
-        vel_ok = True
         for i in range(len(neighbors)):
             diff_vel = test_vel - neighbors[i].vel
 
             if not self.vel_ang_ok(bound_angs[i][0], bound_angs[i][1], atan2(diff_vel[1], diff_vel[0])):
-                vel_ok = False
-                break
-        return vel_ok
+                return False
+
+        return True
 
     def get_avoidance_vels(self, neighbors, v_max):
         """ Returns the velocities for all neighbors that avoids collitions"""
@@ -93,7 +94,9 @@ class Agent(object):
 
                 if self.vel_ang_ok_neigh(test_vel, neighbors, bound_angs):
                     pos_vels.append(test_vel)
-
+        print("lol")
+        print(len(pos_vels))
+        print(pos_vels)
         return pos_vels
 
     def find_best_vel(self, neighbors, v_max):
