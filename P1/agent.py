@@ -121,9 +121,9 @@ class Agent(object):
 
 
 # Test code
-#hej = Agent(np.array([1, 1]), np.array([10, 10]), 0.5)
-#hej2 = Agent(np.array([2, 3]), np.array([10, 10]), 0.5)
+hej = Agent(np.array([1, 1]), np.array([10, 10]), 0.5)
+hej2 = Agent(np.array([2, 3]), np.array([10, 10]), 0.5, np.array([1, -1]))
 
-#print(hej.find_best_vel([hej2], 1.2))
+print(hej.find_best_vel([hej2], 1.2))
 
 #hej.get_bound_ang(hej2)
