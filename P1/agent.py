@@ -95,7 +95,9 @@ class Agent(object):
         """ Returns the best velocity given the neighbors and goal vel"""
 
         self.update_des_vel(v_max)
+
         vels = self.get_avoidance_vels(neighbors, v_max)
+
         min_vel_distance = float("infinity")
         best_vel = None
 
@@ -108,7 +110,7 @@ class Agent(object):
         return best_vel
 
     def update_des_vel(self, vmax):
-        """ Updates the desired velocity to get to the goal"""
+        """ Updaes the """
         vel_needed = self.goal - self.pos
 
         if np.linalg.norm(vel_needed) > vmax:
@@ -122,11 +124,9 @@ def main():
     hej = Agent(np.array([1, 1]), np.array([10, 10]), 0.5)
     hej2 = Agent(np.array([2, 3]), np.array([10, 10]), 0.5, np.array([1, -1]))
 
-    best = hej.find_best_vel([hej2], 1.2)
-    print("Lenght best: ", np.linalg.norm(best))
-    print(best)
+    print(np.linalg.norm(hej.find_best_vel([hej2], 1.2)))
 
     # hej.get_bound_ang(hej2)
 
 
-main()
+#main()
