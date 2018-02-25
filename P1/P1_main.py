@@ -33,16 +33,15 @@ the_map = Problem("source/P21.json")
 
 vmax = the_map.vehicle_v_max
 dt = the_map.vehicle_dt
-print(vmax)
 radius = 0.5
 #print(vel_ang_ok(right, left, vel))
 
-neighbor_limit = vmax * dt * 10
+neighbor_limit = vmax * dt * 30
 
 # -------- Creates the agents and stores them in list
 agents = []
-for i in range(len(the_map.start_positions)):
-    agents.append(Agent(np.array(the_map.start_positions[i]), np.array(the_map.goal_positions[i]), radius))
+for i in range(len(the_map.start_positions) - 15):
+    agents.append(Agent(i, np.array(the_map.start_positions[i]), np.array(the_map.goal_positions[i]), radius))
 
 # -------- Loops through the agents and finds their new position
 agents_not_at_goal = True

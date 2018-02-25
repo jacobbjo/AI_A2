@@ -4,12 +4,13 @@ from math import *
 
 class Agent(object):
 
-    def __init__(self, start_pos, goal_pos, radius, start_vel = np.zeros(2)):
+    def __init__(self, in_index, start_pos, goal_pos, radius, start_vel = np.zeros(2)):
         self.pos = start_pos
         self.goal = goal_pos
         self.vel = start_vel
         self.v_des = np.zeros(2)
         self.r = radius
+        self.index = in_index
 
     def distance_to(self, point):
         """Returns the euclidian distance from the agent to a point"""
@@ -94,9 +95,7 @@ class Agent(object):
 
                 if self.vel_ang_ok_neigh(test_vel, neighbors, bound_angs):
                     pos_vels.append(test_vel)
-        print("lol")
-        print(len(pos_vels))
-        print(pos_vels)
+
         return pos_vels
 
     def find_best_vel(self, neighbors, v_max):
@@ -116,26 +115,26 @@ class Agent(object):
 
         return best_vel
 
-    def update_des_vel(self, vmax):
+    def update_des_vel(self, v_max):
         """ Updates the desired velocity to get to the goal"""
         vel_needed = self.goal - self.pos
 
-        if np.linalg.norm(vel_needed) > vmax:
+        if np.linalg.norm(vel_needed) > v_max:
             vel_needed = vel_needed/ np.linalg.norm(vel_needed)
-            vel_needed *= vmax
+            vel_needed *= v_max
         self.v_des = vel_needed
 
 
 # Test code
-def main():
-    hej = Agent(np.array([1, 1]), np.array([10, 10]), 0.5)
-    hej2 = Agent(np.array([2, 3]), np.array([10, 10]), 0.5, np.array([1, -1]))
+#def main():
+    #hej = Agent(np.array([1, 1]), np.array([10, 10]), 0.5)
+    #hej2 = Agent(np.array([2, 3]), np.array([10, 10]), 0.5, np.array([1, -1]))
 
-    best = hej.find_best_vel([hej2], 1.2)
-    print("Lenght best: ", np.linalg.norm(best))
-    print(best)
+    #best = hej.find_best_vel([hej2], 1.2)
+    #print("Lenght best: ", np.linalg.norm(best))
+    #print(best)
 
     # hej.get_bound_ang(hej2)
 
 
-main()
+#main()
