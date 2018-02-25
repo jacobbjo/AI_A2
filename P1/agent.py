@@ -122,9 +122,11 @@ def main():
     hej = Agent(np.array([1, 1]), np.array([10, 10]), 0.5)
     hej2 = Agent(np.array([2, 3]), np.array([10, 10]), 0.5, np.array([1, -1]))
 
-    print(np.linalg.norm(hej.find_best_vel([hej2], 1.2)))
+    best = hej.find_best_vel([hej2], 1.2)
+    print("Lenght best: ", np.linalg.norm(best))
+    print(best)
 
     # hej.get_bound_ang(hej2)
 
 
-#main()
+main()
