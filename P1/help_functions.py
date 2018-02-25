@@ -23,6 +23,12 @@ def sum_range (ranges):
     out_ranges = [ranges[0]]
 
     for range in ranges:
+        if(range[0]< 0):
+            range[0] += (np.pi*2)
+
+        if (range[1] < 0):
+            range[1] += (np.pi * 2)
+
         for out_range in out_ranges:
             if out_range[0] <= range[0] <= out_range[1]:
                 out_range[1] = range[1]
