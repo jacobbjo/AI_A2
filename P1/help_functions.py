@@ -1,12 +1,5 @@
 import numpy as np
 
-def get_avoidance_vels(self, agent):
-    """ Returns the avoidance velocities"""
-    vels = []
-
-    return vels
-
-
 def get_neighbors(the_agent, agent_list, limit):
     """
 
