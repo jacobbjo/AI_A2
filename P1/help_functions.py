@@ -19,6 +19,8 @@ def get_neighbors(the_agent, agent_list, limit):
     neighbors = []
 
     for agent in agent_list:
+        if agent == the_agent:
+            break
         if np.linalg.norm(agent.pos - the_agent.pos) < limit:
             neighbors.append(agent)
 

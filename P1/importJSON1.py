@@ -134,8 +134,8 @@ class Problem:
                 self.obstacles.append(Polygon(value))
 
         self.bounding_polygon = Polygon(self.data["bounding_polygon"])
-        self.pos_goal = np.array(self.data["goal_positions"])
-        self.pos_start = np.array(self.data["start_positions"])
+        self.goal_positions = np.array(self.data["goal_positions"])
+        self.start_positions = np.array(self.data["start_positions"])
         self.vehicle_L = self.data["vehicle_L"]
         self.vehicle_a_max = self.data["vehicle_a_max"]
         self.vehicle_dt = self.data["vehicle_dt"]

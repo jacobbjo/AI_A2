@@ -32,12 +32,18 @@ class Agent(object):
     def get_bound_ang(self, agent_b):
         """ Returns the left and right boundaries given agent a traveling and agent b being and obstacle. """
 
+        rad_exp = self.r/10 # How close to each other the agents travel
+
         # The line between self and agent b
         vec_ab = agent_b.pos - self.pos
+        rad_ab = self.r + agent_b.r + rad_exp
+        dist = np.linalg.norm(vec_ab)
+        if dist <= rad_ab:
+            dist = rad_ab
 
         theta = atan2(vec_ab[1], vec_ab[0])  # The angle from the x-axis to vec_ab
-        alpha = tan((self.r + agent_b.r)/np.linalg.norm(vec_ab))  # The angle from vec_ab to the boundaries
-
+        alpha = tan(rad_ab/dist)  # The angle from vec_ab to the boundaries
+        #print(alpha)
         # Angles from the x-axis to the boundaries
         ang_right = theta - alpha
         ang_left = theta + alpha
@@ -60,11 +66,11 @@ class Agent(object):
         """ Returns the velocities for all neighbors that avoids collitions"""
 
         # Parameters to control the amount of tested velocities
-        rad_step = v_max/10
-        ang_step = np.pi/20
+        rad_step = v_max/20
+        ang_step = np.pi/30
 
         # Search limit for the angle
-        lim_ang = np.pi  # Maximum 2π
+        lim_ang = 2 * np.pi  # Maximum 2π
         lim_rad = v_max
 
         # The angle from the x-axis to the desired velocity (to get to the goal)
@@ -77,13 +83,12 @@ class Agent(object):
             bound_angs.append(self.get_bound_ang(neighbor))
 
         if self.vel_ang_ok_neigh(self.v_des, neighbors, bound_angs):
-           return [self.v_des]
+            return [self.v_des]
 
         # Finds all the possible velocities
         pos_vels = []
         for ang in np.arange(ang_des-lim_ang/2, ang_des+lim_ang/2, ang_step):
-
-            for rad in np.arange(0, lim_rad, rad_step):
+            for rad in np.arange(0, lim_rad + rad_step, rad_step):
                 test_vel = np.array([rad * cos(ang), rad * sin(ang)])
 
                 if self.vel_ang_ok_neigh(test_vel, neighbors, bound_angs):
@@ -95,13 +100,12 @@ class Agent(object):
         """ Returns the best velocity given the neighbors and goal vel"""
 
         self.update_des_vel(v_max)
-
-        vels = self.get_avoidance_vels(neighbors, v_max)
-
+        pos_vels = self.get_avoidance_vels(neighbors, v_max)
+        #print(len(vels))
         min_vel_distance = float("infinity")
-        best_vel = None
+        best_vel = np.zeros(2)
 
-        for pos_vel in vels:
+        for pos_vel in pos_vels:
             vel_distance = np.linalg.norm(self.v_des - pos_vel)
             if vel_distance < min_vel_distance:
                 best_vel = pos_vel
@@ -110,7 +114,7 @@ class Agent(object):
         return best_vel
 
     def update_des_vel(self, vmax):
-        """ Updaes the """
+        """ Updates the desired velocity to get to the goal"""
         vel_needed = self.goal - self.pos
 
         if np.linalg.norm(vel_needed) > vmax:
@@ -124,9 +128,11 @@ def main():
     hej = Agent(np.array([1, 1]), np.array([10, 10]), 0.5)
     hej2 = Agent(np.array([2, 3]), np.array([10, 10]), 0.5, np.array([1, -1]))
 
-    print(np.linalg.norm(hej.find_best_vel([hej2], 1.2)))
+    best = hej.find_best_vel([hej2], 1.2)
+    print("Lenght best: ", np.linalg.norm(best))
+    print(best)
 
     # hej.get_bound_ang(hej2)
 
 
-#main()
+main()
