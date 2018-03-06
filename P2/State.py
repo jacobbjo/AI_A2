@@ -84,6 +84,11 @@ class Route(object):
     def __repr__(self):
         return str(self.route)
 
+    def __eq__(self, other):
+        if self.__class__ != other.__class__:
+            return False
+        return self.__dict__ == other.__dict__
+
 class State(object):
 
     def __init__(self, routes, v_max=1.0):
@@ -110,10 +115,11 @@ class State(object):
     def add_route(self, new_route):
         self.routes.append(new_route)
         self.routes_distance += new_route.tot_distance
-        if new_route.tot_distance * self.agent_v_max > self.max_time:
-            self.max_time = new_route.tot_distance
+        #if new_route.tot_distance * self.agent_v_max > self.max_time:
+        self.max_time = self.calc_tot_time()
 
     def find_neighborhood(self):
+        """Tests all possible permutations of routes"""
         neighborhood = []
         neighborhood_size = 1000
         for i in range(neighborhood_size):
@@ -121,9 +127,12 @@ class State(object):
             if neighbor != None:
                 neighborhood.append(neighbor)
         print(self.max_time)
-        for neighbor in neighborhood:
-            print(neighbor.max_time)
+        for indx, neighbor in enumerate(neighborhood):
+            if neighbor.max_time < self.max_time:
+                print(indx)
+                print(neighbor.max_time)
         return neighborhood
+
 
     def find_neighbor(self):
         neighbor = copy.deepcopy(self)
