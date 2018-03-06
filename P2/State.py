@@ -35,14 +35,14 @@ class Route(object):
                 original_dist = np.linalg.norm(point1.xy - point2.xy) + np.linalg.norm(point3.xy - point4.xy)
                 changed_dist = np.linalg.norm(point1.xy - point3.xy) + np.linalg.norm(point2.xy - point4.xy)
                 if changed_dist < original_dist:
-                    self.route = self.change_route(i+1, j+1)
+                    self.route = self.change_route(i, j)
 
     def change_route(self, ind_to_change1, ind_to_change2):
-        new_route = []
-        for i in range(0, ind_to_change1):
-            new_route.append(self.route[i])
-        for i in range(ind_to_change1, )
-
+        #new_route = self.route[:ind_to_change1]
+        #new_route.append(self.route[ind_to_change1+1:ind_to_change2].reverse())
+        #new_route.append(self.route[ind_to_change2+1:])
+        #self.route = new_route
+        self.route[ind_to_change1+1:ind_to_change2] = self.route[ind_to_change1+1:ind_to_change2].reverse()
 
 class State(object):
 
