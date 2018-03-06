@@ -44,7 +44,6 @@ def main():
     # Hur ska skiftena göras?
     # Vilka skiften ska göras?
 
-    print("hello world")
     the_map = Problem("P22.json")
     points = create_points(the_map.points_of_interest)
     starts = the_map.start_positions
