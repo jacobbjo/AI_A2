@@ -41,6 +41,22 @@ def create_points(point_list):
         points.append(new_point)
     return points
 
+def tabu_search(state):
+    filter_out_rules = []  # Contains tuples as (point, forbidden route index)
+
+    to_continue = True
+    while to_continue:
+        good_neighbors = []
+
+        neighborhood = state.find_neighborhood()
+        for neighbor in neighborhood:
+            for rule in filter_out_rules:
+                if not rule[0] in neighbor.routes[rule[1]]:
+                    good_neighbors.append(neighbor)
+
+
+
+
 def main():
 
     # Var ska ska skiftet i routerna göras och tabuerna hållas koll på?

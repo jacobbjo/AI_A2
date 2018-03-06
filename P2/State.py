@@ -15,6 +15,11 @@ class Point(object):
     def __repr__(self):
         return self.__str__()
 
+    def __eq__(self, other):
+        if self.__class__ != other.__class__:
+            return False
+        return self.__dict__ == other.__dict__
+
 
 class Route(object):
 
@@ -105,6 +110,37 @@ class State(object):
         self.routes_distance = self.calc_routes_distance()
         self.agent_v_max = v_max
         self.max_time = self.calc_tot_time()
+
+    def __lt__(self, other):  # For x < y
+        if self.max_time == other.max_time:
+            return self.routes_distance < other.routes_distance
+        return self.max_time < other.max_time
+
+    def __le__(self, other):  # For x <= y
+        if self.max_time == other.max_time:
+            return self.routes_distance <= other.routes_distance
+        return self.max_time <= other.max_time
+
+    def __eq__(self, other):  # For x == y
+        if self.__class__ != other.__class__:
+            return False
+        return self.__dict__ == other.__dict__
+
+    def __ne__(self, other):  # For x != y OR x <> y
+        if self.__class__ != other.__class__:
+            return True
+        return self.__dict__ != other.__dict__
+
+    def __gt__(self, other):  # For x > y
+        if self.max_time == other.max_time:
+            return self.routes_distance > other.routes_distance
+        return self.max_time > other.max_time
+
+    def __ge__(self, other):  # For x >= y
+        if self.max_time == other.max_time:
+            return self.routes_distance >= other.routes_distance
+        return self.max_time >= other.max_time
+
 
     def calc_routes_distance(self):
         tot_distance = 0
