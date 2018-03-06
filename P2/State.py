@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 
 class Point(object):
@@ -52,6 +53,25 @@ class Route(object):
                     self.route[i + 1:j + 1] = reversed(self.route[i + 1:j + 1])
 
 
+
+    def change_routes(self, otherRoute):
+        if self == otherRoute:
+            self.two_opt()
+        else:
+            random_point = self.route[random.randint(0, self.num_points-1)]
+            position = random.randint(0, otherRoute.num_points)
+            self.remove_point(random_point)
+            otherRoute.add_point(random_point, position)
+
+    def add_point(self, point_to_add, position):
+        self.route.insert(position, point_to_add)
+
+    def remove_point(self, point_to_remove):
+        self.route.remove(point_to_remove)
+        self.num_points -= 1
+
+
+
 class State(object):
 
     def __init__(self, routes, v_max=1.0):
@@ -81,11 +101,17 @@ class State(object):
         if new_route.tot_distance * self.agent_v_max > self.max_time:
             self.max_time = new_route.tot_distance
 
-    def findNeighborhood(self):
-        # Vad vill vi ha här? Two opt? Ta en punkt från en route till en annan
-        # To change a point from one route to another.
-            # Plocka ut två random routes. (Om det blir samma route, gör 2-opt)
-            # Byt plats på en random point från den första routen till den andra.
-            # Ett nytt neighborhood hittat.
+    def find_neighborhood(self):
+        neighborhood = []
+        neighborhood_size = 100
+        for i in range(neighborhood_size):
+            neighborhood.append(self.find_neighbor())
+        return neighborhood
 
-        return []
+    def find_neighbor(self):
+        neighbor = State(self.routes, self.agent_v_max)
+        route1 = random.randint(0, len(neighbor.routes)-1)
+        route2 = random.randint(0, len(neighbor.routes)-1)
+        route1.change_routes(route2)
+        return neighbor
+
