@@ -10,19 +10,22 @@ def calcDistance(point1, point2):
 
 def assign_points(points, starts, goals, v_max):
     routes = []
-    for i in range(starts.shape[0]):
+    for i in range(len(starts)):
         routes.append([])
 
     for i in range(len(points)):
         min_distance = float("infinity")
         min_index = -1
-        for j in range(starts.shape[0]):
-            distance = min(calcDistance(points[i].xy, starts[j]), calcDistance(points[i].xy, goals[j]))
+
+        for j in range(len(starts)):
+            distance = min(calcDistance(points[i].xy, starts[j].xy), calcDistance(points[i].xy, goals[j].xy))
             if distance < min_distance:
                 min_distance = distance
                 min_index = j
+
         routes[min_index].append(points[i])
     state = State([], v_max)
+
     for i in range(len(routes)):
         route = routes[i]
         route_object = Route(starts[i], goals[i], route)
@@ -46,8 +49,8 @@ def main():
 
     the_map = Problem("P22.json")
     points = create_points(the_map.points_of_interest)
-    starts = the_map.start_positions
-    goals = the_map.goal_positions
+    starts = create_points(the_map.start_positions)
+    goals = create_points(the_map.goal_positions)
     dt = the_map.vehicle_dt
     v_max = the_map.vehicle_v_max
     # Assign each point the the agent with the closest start or goalPoint
@@ -63,8 +66,8 @@ def main():
         for i in range(init_routes[agent_index].num_points):
             plt.plot(init_routes[agent_index].route[i].xy[0], init_routes[agent_index].route[i].xy[1], "o", c=color)
 
-        plt.plot(starts[agent_index][0], starts[agent_index][1], "x", c=color)
-        plt.plot(goals[agent_index][0], goals[agent_index][1], "x", c=color)
+        plt.plot(starts[agent_index].xy[0], starts[agent_index].xy[1], "x", c=color)
+        plt.plot(goals[agent_index].xy[0], goals[agent_index].xy[1], "x", c=color)
 
     #for agent_index in range(len(init_routes)):
     #    color = colors[agent_index+1]

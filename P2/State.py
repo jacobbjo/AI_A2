@@ -26,8 +26,8 @@ class Route(object):
     def calc_tot_distance(self):
         tot_distance = 0
         if len(self.route) > 0:
-            tot_distance += np.linalg.norm(self.route[0].xy - self.start)
-            tot_distance += np.linalg.norm(self.goal - self.route[len(self.route)-1].xy)
+            tot_distance += np.linalg.norm(self.route[0].xy - self.start.xy)
+            tot_distance += np.linalg.norm(self.goal.xy - self.route[len(self.route)-1].xy)
             for i in range(len(self.route)-1):
                 tot_distance += np.linalg.norm(self.route[i+1].xy - self.route[i].xy)
         return tot_distance
@@ -37,6 +37,8 @@ class Route(object):
             return
         #print(self.route[1])
         print(self.num_points)
+
+        complete_route = [self.start] + self.route + [self.goal]
 
         for i in range(self.num_points - 2):
             for j in range(i+2, self.num_points-1):
