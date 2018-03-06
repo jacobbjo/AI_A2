@@ -18,7 +18,7 @@ class Point(object):
     def __eq__(self, other):
         if self.__class__ != other.__class__:
             return False
-        return self.__dict__ == other.__dict__
+        return self.xy[0] == other.xy[0] and self.xy[1] == other.xy[1]
 
 
 class Route(object):
@@ -44,8 +44,6 @@ class Route(object):
     def two_opt(self):
         if self.num_points < 4 or self.route is None:
             return
-        #print(self.route[1])
-        #print(self.num_points)
 
         # we have to consider the start and goal when calculating the two opt
         complete_route = [self.start] + self.route + [self.goal]
@@ -76,11 +74,13 @@ class Route(object):
     def change_routes(self, otherRoute):
         if self == otherRoute:
             self.two_opt()
+            return None
         else:
             random_point = self.route[random.randint(0, self.num_points-1)]
             position = random.randint(0, otherRoute.num_points)
             self.remove_point(random_point)
             otherRoute.add_point(random_point, position)
+            return random_point
 
     def add_point(self, point_to_add, position):
         self.route.insert(position, point_to_add)
@@ -100,7 +100,9 @@ class Route(object):
     def __eq__(self, other):
         if self.__class__ != other.__class__:
             return False
-        return self.__dict__ == other.__dict__
+
+        return self.route == other.route and self.start == other.start and self.goal == other.goal
+
 
 class State(object):
 
@@ -110,6 +112,7 @@ class State(object):
         self.routes_distance = self.calc_routes_distance()
         self.agent_v_max = v_max
         self.max_time = self.calc_tot_time()
+        self.mutation = None
 
     def __lt__(self, other):  # For x < y
         if self.max_time == other.max_time:
@@ -124,12 +127,12 @@ class State(object):
     def __eq__(self, other):  # For x == y
         if self.__class__ != other.__class__:
             return False
-        return self.__dict__ == other.__dict__
+        return self.routes == other.routes
 
     def __ne__(self, other):  # For x != y OR x <> y
         if self.__class__ != other.__class__:
             return True
-        return self.__dict__ != other.__dict__
+        return self.routes != other.routes
 
     def __gt__(self, other):  # For x > y
         if self.max_time == other.max_time:
@@ -188,7 +191,13 @@ class State(object):
 
         if route1.num_points == 0:
             return None
-        route1.change_routes(route2)
+        moved_point = route1.change_routes(route2)
         neighbor.update_state()
+
+        if moved_point == None:
+            neighbor.mutation = None
+        else:
+            neighbor.mutation = (moved_point, index1)
+
         return neighbor
 

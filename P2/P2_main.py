@@ -41,20 +41,56 @@ def create_points(point_list):
         points.append(new_point)
     return points
 
+
 def tabu_search(state):
-    filter_out_rules = []  # Contains tuples as (point, forbidden route index)
+    num_rules = 10
+    fail_limit = 10
+    rule_changes = 0
+    filter_out_rules = [None] * num_rules  # Contains tuples as (point, forbidden route index)
+    best_state = state
+
+    bad_neighborhoods = 0
 
     to_continue = True
     while to_continue:
         good_neighbors = []
 
-        neighborhood = state.find_neighborhood()
+        neighborhood = best_state.find_neighborhood()
         for neighbor in neighborhood:
-            for rule in filter_out_rules:
-                if not rule[0] in neighbor.routes[rule[1]]:
-                    good_neighbors.append(neighbor)
+            if filter_out_rules[0] is not None:
+                for rule in filter_out_rules:
+                    if rule is None:
+                        break
+                    if not rule[0] in neighbor.routes[rule[1]].route:
+                        good_neighbors.append(neighbor)
+            else:
+                good_neighbors.append(neighbor)
+
+        best_neighbor_state = best_neighbor(good_neighbors)
+        if best_neighbor_state < best_state:
+            best_state = best_neighbor_state
+
+            if best_state.mutation is not None:
+                filter_out_rules[rule_changes % num_rules] = best_state.mutation
+                rule_changes += 1
+
+            bad_neighborhoods = 0
+        else:
+            bad_neighborhoods +=1
+            if bad_neighborhoods > fail_limit:
+                to_continue = False
+
+    return best_state
 
 
+def best_neighbor(good_neighborhood):
+    best_neighbor = good_neighborhood[0]
+
+    for neighbor in good_neighborhood:
+        if neighbor < best_neighbor:
+            best_neighbor = neighbor
+
+    return best_neighbor
 
 
 def main():
@@ -71,13 +107,18 @@ def main():
     v_max = the_map.vehicle_v_max
     # Assign each point the the agent with the closest start or goalPoint
     init_state = assign_points(points, starts, goals, v_max)
-    init_routes = init_state.routes
-    init_state.find_neighborhood()
+    #init_routes = init_state.routes
+    #init_state.find_neighborhood()
 
     #init_routes[2].two_opt()
 
     # Show the point assignments
     colors = createColorDictDist()
+    final_state = tabu_search(init_state)
+    print(init_state.max_time)
+    print(final_state.max_time)
+    init_routes = final_state.routes
+
     for agent_index in range(len(init_routes)):
         color = colors[agent_index+1]
         for i in range(init_routes[agent_index].num_points):
@@ -85,6 +126,8 @@ def main():
 
         plt.plot(starts[agent_index].xy[0], starts[agent_index].xy[1], "x", c=color)
         plt.plot(goals[agent_index].xy[0], goals[agent_index].xy[1], "x", c=color)
+
+
 
     #for agent_index in range(len(init_routes)):
     #    color = colors[agent_index+1]
