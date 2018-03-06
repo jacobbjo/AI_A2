@@ -33,27 +33,27 @@ class Route(object):
         return tot_distance
 
     def two_opt(self):
-        if self.num_points < 4 or self.route == None:
+        if self.num_points < 4 or self.route is None:
             return
-        #print(self.route[1])
-        print(self.num_points)
 
+        # we have to consider the start and goal when calculating the two opt
         complete_route = [self.start] + self.route + [self.goal]
 
-        for i in range(self.num_points - 2):
-            for j in range(i+2, self.num_points-1):
+        for i in range(len(complete_route) - 2):
+            for j in range(i+2, len(complete_route) - 1):
 
-                point1 = self.route[i]
-                point2 = self.route[i+1]
-                point3 = self.route[j]
-                point4 = self.route[j+1]
+                point1 = complete_route[i]
+                point2 = complete_route[i+1]
+                point3 = complete_route[j]
+                point4 = complete_route[j+1]
 
                 original_dist = np.linalg.norm(point2.xy - point1.xy) + np.linalg.norm(point4.xy - point3.xy)
                 changed_dist = np.linalg.norm(point3.xy - point1.xy) + np.linalg.norm(point4.xy - point2.xy)
 
                 if changed_dist < original_dist:
-                    self.route[i + 1:j + 1] = reversed(self.route[i + 1:j + 1])
+                    complete_route[i + 1:j + 1] = reversed(complete_route[i + 1:j + 1])
 
+        self.route = complete_route[1:-1]
 
 
     def change_routes(self, otherRoute):
