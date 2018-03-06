@@ -15,6 +15,7 @@ class Point(object):
     def __repr__(self):
         return self.__str__()
 
+
 class Route(object):
 
     def __init__(self, start, goal, route_list):
@@ -28,9 +29,11 @@ class Route(object):
         tot_distance = 0
         if len(self.route) > 0:
             tot_distance += np.linalg.norm(self.route[0].xy - self.start.xy)
-            tot_distance += np.linalg.norm(self.goal.xy - self.route[len(self.route)-1].xy)
+            tot_distance += np.linalg.norm(self.goal.xy - self.route[-1].xy)
             for i in range(len(self.route)-1):
                 tot_distance += np.linalg.norm(self.route[i+1].xy - self.route[i].xy)
+        else:
+            tot_distance = np.linalg.norm(self.goal.xy - self.start.xy)
         return tot_distance
 
     def two_opt(self):
@@ -57,6 +60,12 @@ class Route(object):
                     complete_route[i + 1:j + 1] = reversed(complete_route[i + 1:j + 1])
 
         self.route = complete_route[1:-1]
+        self.update_route()
+
+
+    def update_route(self):
+        self.num_points = len(self.route)
+        self.tot_distance = self.calc_tot_distance()
 
 
     def change_routes(self, otherRoute):
@@ -70,13 +79,12 @@ class Route(object):
 
     def add_point(self, point_to_add, position):
         self.route.insert(position, point_to_add)
-        self.num_points += 1
-        self.tot_distance = self.calc_tot_distance()
+        self.update_route()
+
 
     def remove_point(self, point_to_remove):
         self.route.remove(point_to_remove)
-        self.num_points -= 1
-        self.tot_distance = self.calc_tot_distance()
+        self.update_route()
 
     def __str__(self):
         return str(self.route)
@@ -101,22 +109,26 @@ class State(object):
     def calc_routes_distance(self):
         tot_distance = 0
         for route in self.routes:
-            tot_distance = route.tot_distance
+            tot_distance += route.tot_distance
         return tot_distance
 
     def calc_tot_time(self):
         max_time = -float("infinity")
+
         for route in self.routes:
-            time = route.tot_distance * self.agent_v_max
+            time = route.tot_distance / self.agent_v_max
             if time > max_time:
                 max_time = time
+
         return max_time
+
+    def update_state(self):
+        self.routes_distance = self.calc_routes_distance()
+        self.max_time = self.calc_tot_time()
 
     def add_route(self, new_route):
         self.routes.append(new_route)
-        self.routes_distance += new_route.tot_distance
-        #if new_route.tot_distance * self.agent_v_max > self.max_time:
-        self.max_time = self.calc_tot_time()
+        self.update_state()
 
     def find_neighborhood(self):
         """Tests all possible permutations of routes"""
@@ -126,23 +138,21 @@ class State(object):
             neighbor = self.find_neighbor()
             if neighbor != None:
                 neighborhood.append(neighbor)
-        print(self.max_time)
-        for indx, neighbor in enumerate(neighborhood):
-            if neighbor.max_time < self.max_time:
-                print(indx)
-                print(neighbor.max_time)
+
         return neighborhood
 
 
     def find_neighbor(self):
         neighbor = copy.deepcopy(self)
+        neighbor.update_state()
         index1 = random.randint(0, len(neighbor.routes)-1)
         index2 = random.randint(0, len(neighbor.routes)-1)
         route1 = neighbor.routes[index1]
         route2 = neighbor.routes[index2]
+
         if route1.num_points == 0:
             return None
         route1.change_routes(route2)
-        neighbor.max_time = neighbor.calc_tot_time()
+        neighbor.update_state()
         return neighbor
 
