@@ -56,8 +56,9 @@ def main():
     # Assign each point the the agent with the closest start or goalPoint
     init_state = assign_points(points, starts, goals, v_max)
     init_routes = init_state.routes
+    init_state.find_neighborhood()
 
-    init_routes[2].two_opt()
+    #init_routes[2].two_opt()
 
     # Show the point assignments
     colors = createColorDictDist()

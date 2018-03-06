@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import copy
 
 
 class Point(object):
@@ -35,6 +36,8 @@ class Route(object):
     def two_opt(self):
         if self.num_points < 4 or self.route is None:
             return
+        #print(self.route[1])
+        #print(self.num_points)
 
         # we have to consider the start and goal when calculating the two opt
         complete_route = [self.start] + self.route + [self.goal]
@@ -67,12 +70,19 @@ class Route(object):
 
     def add_point(self, point_to_add, position):
         self.route.insert(position, point_to_add)
+        self.num_points += 1
+        self.tot_distance = self.calc_tot_distance()
 
     def remove_point(self, point_to_remove):
         self.route.remove(point_to_remove)
         self.num_points -= 1
+        self.tot_distance = self.calc_tot_distance()
 
+    def __str__(self):
+        return str(self.route)
 
+    def __repr__(self):
+        return str(self.route)
 
 class State(object):
 
@@ -80,8 +90,8 @@ class State(object):
         """ Routes are a list with route objects"""
         self.routes = routes
         self.routes_distance = self.calc_routes_distance()
-        self.max_time = self.calc_tot_time()
         self.agent_v_max = v_max
+        self.max_time = self.calc_tot_time()
 
     def calc_routes_distance(self):
         tot_distance = 0
@@ -105,15 +115,25 @@ class State(object):
 
     def find_neighborhood(self):
         neighborhood = []
-        neighborhood_size = 100
+        neighborhood_size = 1000
         for i in range(neighborhood_size):
-            neighborhood.append(self.find_neighbor())
+            neighbor = self.find_neighbor()
+            if neighbor != None:
+                neighborhood.append(neighbor)
+        print(self.max_time)
+        for neighbor in neighborhood:
+            print(neighbor.max_time)
         return neighborhood
 
     def find_neighbor(self):
-        neighbor = State(self.routes, self.agent_v_max)
-        route1 = random.randint(0, len(neighbor.routes)-1)
-        route2 = random.randint(0, len(neighbor.routes)-1)
+        neighbor = copy.deepcopy(self)
+        index1 = random.randint(0, len(neighbor.routes)-1)
+        index2 = random.randint(0, len(neighbor.routes)-1)
+        route1 = neighbor.routes[index1]
+        route2 = neighbor.routes[index2]
+        if route1.num_points == 0:
+            return None
         route1.change_routes(route2)
+        neighbor.max_time = neighbor.calc_tot_time()
         return neighbor
 
