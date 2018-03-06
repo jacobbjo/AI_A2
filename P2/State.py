@@ -44,21 +44,40 @@ class Route(object):
         for i in range(ind_to_change1, )
 
 
-
 class State(object):
 
-    def __init__(self, routes):
+    def __init__(self, routes, v_max=1.0):
         """ Routes are a list with route objects"""
         self.routes = routes
-        self.routes_distance = self.calc_routes_distance(self.routes)
+        self.routes_distance = self.calc_routes_distance()
+        self.max_time = self.calc_tot_time()
+        self.agent_v_max = v_max
 
-    def calc_routes_distance(self, routes):
+    def calc_routes_distance(self):
         tot_distance = 0
-        for route in routes:
+        for route in self.routes:
             tot_distance = route.tot_distance
         return tot_distance
+
+    def calc_tot_time(self):
+        max_time = -float("infinity")
+        for route in self.routes:
+            time = route.tot_distance * self.agent_v_max
+            if time > max_time:
+                max_time = time
+        return max_time
 
     def add_route(self, new_route):
         self.routes.append(new_route)
         self.routes_distance += new_route.tot_distance
+        if new_route.tot_distance * self.agent_v_max > self.max_time:
+            self.max_time = new_route.tot_distance
 
+    def findNeighborhood(self):
+        # Vad vill vi ha här? Two opt? Ta en punkt från en route till en annan
+        # To change a point from one route to another.
+            # Plocka ut två random routes. (Om det blir samma route, gör 2-opt)
+            # Byt plats på en random point från den första routen till den andra.
+            # Ett nytt neighborhood hittat.
+
+        return []

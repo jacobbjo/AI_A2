@@ -7,7 +7,8 @@ from State import *
 def calcDistance(point1, point2):
     return np.linalg.norm(point2-point1)
 
-def assignPoints(points, starts, goals):
+
+def assign_points(points, starts, goals, v_max):
     routes = []
     for i in range(starts.shape[0]):
         routes.append([])
@@ -21,7 +22,7 @@ def assignPoints(points, starts, goals):
                 min_distance = distance
                 min_index = j
         routes[min_index].append(points[i])
-    state = State([])
+    state = State([], v_max)
     for i in range(len(routes)):
         route = routes[i]
         route_object = Route(starts[i], goals[i], route)
@@ -48,13 +49,14 @@ def main():
     points = create_points(the_map.points_of_interest)
     starts = the_map.start_positions
     goals = the_map.goal_positions
+    dt = the_map.vehicle_dt
+    v_max = the_map.vehicle_v_max
     # Assign each point the the agent with the closest start or goalPoint
-    init_state = assignPoints(points, starts, goals)
+    init_state = assign_points(points, starts, goals, v_max)
     init_routes = init_state.routes
-    colors = createColorDictDist()
+
     # Show the point assignments
-
-
+    colors = createColorDictDist()
     for agent_index in range(len(init_routes)):
         color = colors[agent_index+1]
         for i in range(init_routes[agent_index].num_points):
@@ -72,7 +74,6 @@ def main():
     #    plt.plot(goals[agent_index][0], goals[agent_index][1], "x", c=color)
 
     plt.show()
-
 
 def createColorDictDist():
     # It is 29 districts
