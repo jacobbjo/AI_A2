@@ -54,6 +54,8 @@ def main():
     init_state = assign_points(points, starts, goals, v_max)
     init_routes = init_state.routes
 
+    init_routes[2].two_opt()
+
     # Show the point assignments
     colors = createColorDictDist()
     for agent_index in range(len(init_routes)):

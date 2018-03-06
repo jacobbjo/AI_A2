@@ -7,6 +7,12 @@ class Point(object):
         self.xy = xy
         self.index = ind
 
+    def __str__(self):
+        return str(self.index)
+
+    def __repr__(self):
+        return self.__str__()
+
 class Route(object):
 
     def __init__(self, start, goal, route_list):
@@ -26,23 +32,25 @@ class Route(object):
         return tot_distance
 
     def two_opt(self):
+        if self.num_points < 4 or self.route == None:
+            return
+        #print(self.route[1])
+        print(self.num_points)
+
         for i in range(self.num_points - 2):
             for j in range(i+2, self.num_points-1):
+
                 point1 = self.route[i]
                 point2 = self.route[i+1]
                 point3 = self.route[j]
                 point4 = self.route[j+1]
-                original_dist = np.linalg.norm(point1.xy - point2.xy) + np.linalg.norm(point3.xy - point4.xy)
-                changed_dist = np.linalg.norm(point1.xy - point3.xy) + np.linalg.norm(point2.xy - point4.xy)
-                if changed_dist < original_dist:
-                    self.route = self.change_route(i, j)
 
-    def change_route(self, ind_to_change1, ind_to_change2):
-        #new_route = self.route[:ind_to_change1]
-        #new_route.append(self.route[ind_to_change1+1:ind_to_change2].reverse())
-        #new_route.append(self.route[ind_to_change2+1:])
-        #self.route = new_route
-        self.route[ind_to_change1+1:ind_to_change2] = self.route[ind_to_change1+1:ind_to_change2].reverse()
+                original_dist = np.linalg.norm(point2.xy - point1.xy) + np.linalg.norm(point4.xy - point3.xy)
+                changed_dist = np.linalg.norm(point3.xy - point1.xy) + np.linalg.norm(point4.xy - point2.xy)
+
+                if changed_dist < original_dist:
+                    self.route[i + 1:j + 1] = reversed(self.route[i + 1:j + 1])
+
 
 class State(object):
 
