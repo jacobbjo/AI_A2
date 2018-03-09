@@ -14,7 +14,26 @@ def plot_agents(agents):
     plt.plot(35, 35, "o")
     for agent in agents:
         plt.plot(agent.pos[0], agent.pos[1], "o")
-    plt.pause(0.05)
+    plt.pause(0.005)
+
+def plot_agent_path(agents, num_iterations):
+
+    for i in range(num_iterations):
+        plt.clf()
+        plt.axis("equal")
+        plt.plot(5, 35, "o")
+        plt.plot(35, 5, "o")
+        plt.plot(5, 5, "o")
+        plt.plot(35, 35, "o")
+        for agent in agents:
+            try:
+                pos = agent.pos_hist[i]
+            except:
+                pos = agent.pos_hist[-1]
+            plt.plot(pos[0], pos[1], "o")
+        plt.pause(0.05)
+
+
 
 
 def collisions(agents):
@@ -30,11 +49,12 @@ vel = math.atan2(-1, -1)
 
 the_map = Problem("source/P21.json")
 
-vmax = the_map.vehicle_v_max
+#vmax = the_map.vehicle_v_max
+vmax = 2
 dt = the_map.vehicle_dt
 radius = 0.5
 
-neighbor_limit = 2#vmax * dt * 10 + radius * 2
+neighbor_limit = vmax * dt * 10 + radius * 2
 
 # -------- Creates the agents and stores them in list
 agents = []
@@ -45,7 +65,7 @@ for i in range(len(the_map.start_positions)):
 agents_not_at_goal = True
 
 # --------- plots the agents
-plot_agents(agents)
+#plot_agents(agents)
 
 num_iterations = 0
 while agents_not_at_goal:
@@ -54,6 +74,7 @@ while agents_not_at_goal:
     new_vels = []
     #print(len(agents))
     for agent in agents:
+        agent.pos_hist.append(np.copy(agent.pos))
         if round(np.linalg.norm(agent.goal - agent.pos), 2) < vmax * dt:
         #if abs(agent.pos[0] - agent.goal[0]) < vmax * dt and abs(agent.pos[1] - agent.goal[1]) < vmax * dt:
             # If an agents already is on goal we do not want to change its position
@@ -72,11 +93,16 @@ while agents_not_at_goal:
     for i in range(len(agents)):
         agents[i].pos += pos_differences[i]
         agents[i].vel = new_vels[i]
-    plot_agents(agents)
+    #plot_agents(agents)
     if num_agents_at_goal == len(agents):
         agents_not_at_goal = False
     collisions(agents)
     num_iterations += 1
     print(num_agents_at_goal)
-print(num_iterations)
+
+#for agent in agents:
+#    print(agent.pos_hist)
+#print(num_iterations)
+plot_agent_path(agents, num_iterations)
+plt.show()
 

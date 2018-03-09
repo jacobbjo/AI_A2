@@ -13,6 +13,7 @@ class Agent(object):
         self.v_des = np.zeros(2)
         self.r = radius
         self.index = in_index
+        self.pos_hist = []
 
     def distance_to(self, point):
         """Returns the euclidian distance from the agent to a point"""
