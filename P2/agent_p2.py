@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 class Agent(object):
 
     def __init__(self, in_index, start_pos, goal_pos, in_poi, radius, start_vel = np.zeros(2)):
-        self.pos = start_pos
+        self.pos = start_pos.xy
         self.goal = goal_pos
         self.vel = start_vel
         self.v_des = np.zeros(2)
@@ -16,6 +16,7 @@ class Agent(object):
         self.poi = in_poi
         self.pos_hist = [] # keep track of all positions for later visualization
         self.is_moving = True
+        self.poi.append(self.goal)
 
     def distance_to(self, point):
         """Returns the euclidian distance from the agent to a point"""
@@ -80,8 +81,10 @@ class Agent(object):
 
         return True
 
-    def get_avoidance_vels(self, neighbors, v_max):
+    def get_avoidance_vels(self, neighbors, the_map):
         """ Returns the velocities for all neighbors that avoids collitions"""
+        v_max = the_map.vehicle_v_max
+        dt = the_map.vehicle_dt
 
         # Parameters to control the amount of tested velocities
         rad_step = v_max/5
@@ -101,7 +104,8 @@ class Agent(object):
             bound_angs.append(self.get_bound_ang(neighbor))
 
         if self.vel_ang_ok_neigh(self.v_des, neighbors, bound_angs):
-            return [self.v_des]
+            if the_map.valid_point(self.pos + (self.v_des * dt )):
+                return [self.v_des]
 
         # Finds all the possible velocities
         pos_vels = []
@@ -110,20 +114,21 @@ class Agent(object):
                 test_vel = np.array([rad * cos(ang), rad * sin(ang)])
 
                 if self.vel_ang_ok_neigh(test_vel, neighbors, bound_angs):
-                    pos_vels.append(test_vel)
+                    if the_map.valid_point(self.pos + (test_vel * dt)):
+                        pos_vels.append(test_vel)
 
         return pos_vels
 
     def save_pos(self):
         self.pos_hist.append(np.copy(self.pos))
 
-    def find_best_vel(self, agents, neighbor_limit, v_max):
+    def find_best_vel(self, agents, neighbor_limit, the_map):
         """ Returns the best velocity given the neighbors and goal vel"""
 
         neighbors = self.get_neighbors(agents, neighbor_limit)
 
-        self.update_des_vel(v_max)
-        pos_vels = self.get_avoidance_vels(neighbors, v_max)
+        self.update_des_vel(the_map)
+        pos_vels = self.get_avoidance_vels(neighbors, the_map)
 
         # REMOVE THIS BEFORE FINAL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
         #if len(pos_vels) == 0:
@@ -139,14 +144,33 @@ class Agent(object):
                 min_vel_distance = vel_distance
         return best_vel
 
-    def update_des_vel(self, v_max):
+    def update_des_vel(self, the_map):
         """ Updates the desired velocity to get to the next poi"""
+        v_max = the_map.vehicle_v_max
+        dt = the_map.vehicle_dt
+        rot_ang = pi/4
+        rot_mat = np.array([[np.cos(rot_ang), -np.sin(rot_ang)], [np.sin(rot_ang), np.cos(rot_ang)]])
+
+
         vel_needed = self.poi[0].xy - self.pos
 
-        if np.linalg.norm(vel_needed) > v_max:
-            vel_needed = vel_needed / np.linalg.norm(vel_needed)
-            vel_needed *= v_max
-        self.v_des = vel_needed
+        #if np.linalg.norm(vel_needed) > v_max:
+        vel_needed = vel_needed / np.linalg.norm(vel_needed)
+        vel_needed *= v_max
+
+        while True:
+            if the_map.valid_point(self.pos + (vel_needed * dt)):
+                self.v_des = vel_needed
+                break
+            else:
+                print("rotating, vel_needed before: ", vel_needed)
+                vel_needed = np.matmul(rot_mat,  vel_needed)
+                print("rotating, vel_needed after: ", vel_needed)
+
+
+
+
+
 
     def get_neighbors(self, agent_list, limit):
         """
@@ -167,23 +191,9 @@ class Agent(object):
         return neighbors
 
     def check_route_status(self, limit):
-        if round(np.linalg.norm(self.poi[0].xy - self.pos), 2) < limit:
+        if np.linalg.norm(self.poi[0].xy - self.pos) < limit:
+            print("Found point! ind: ", self.index)
             self.poi.pop(0)
 
         if len(self.poi) == 0:
             self.is_moving = False
-
-
-# Test code
-#def main():
-    #hej = Agent(np.array([1, 1]), np.array([10, 10]), 0.5)
-    #hej2 = Agent(np.array([2, 3]), np.array([10, 10]), 0.5, np.array([1, -1]))
-
-    #best = hej.find_best_vel([hej2], 1.2)
-    #print("Lenght best: ", np.linalg.norm(best))
-    #print(best)
-
-    # hej.get_bound_ang(hej2)
-
-
-#main()

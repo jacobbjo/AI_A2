@@ -94,6 +94,44 @@ def best_neighbor(good_neighborhood):
 
     return best_neighbor
 
+def on_point(pos, points, v_max, dt):
+    for ind, point in enumerate(points):
+        if np.linalg.norm(pos - point.xy) < v_max*dt:
+            return ind
+    return -1
+
+
+def plot_agent_path(agents, starts, goals, points, v_max, dt):
+    colors = createColorDictDist()
+    for i in range(len(agents[0].pos_hist)):
+        print("Current pos: ", i)
+        plt.clf()
+        plt.axis("equal")
+        plt.plot(-5, 40, "o")
+        plt.plot(40, -5, "o")
+        plt.plot(-5, -5, "o")
+        plt.plot(40, 40, "o")
+        plot_map(starts, goals, points)
+        for ag_ind, agent in enumerate(agents):
+            color = colors[ag_ind + 1]
+            pos = agent.pos_hist[i]
+            point_index = on_point(pos, points, v_max, dt)
+            if point_index != -1:
+                points.pop(point_index)
+            plt.plot(pos[0], pos[1], "o", c = color)
+        plt.pause(0.05)
+
+    plt.show()
+
+def plot_map(starts, goals, points):
+    colors = createColorDictDist()
+
+    for i in range(len(starts)):
+        color = colors[i+1]
+        plt.plot(starts[i].xy[0], starts[i].xy[1], "2", c=color)
+        plt.plot(goals[i].xy[0], goals[i].xy[1], "*", c=color)
+    for i in range(len(points)):
+        plt.plot(points[i].xy[0], points[i].xy[1], "x")
 
 def main():
     the_map = Problem("P22.json")
@@ -114,12 +152,9 @@ def main():
     agents = []
     radius = 0.5
     neighbor_limit = 2  # vmax * dt * 10 + radius * 2
-    vmax = the_map.vehicle_v_max
 
     for ind, route in enumerate(final_state.routes):
-        agents.append(Agent(ind, route.start.xy, route.goal.xy, route.route, radius))
-
-
+        agents.append(Agent(ind, route.start, route.goal, route.route, radius))
 
 
     while busy_agents:
@@ -132,7 +167,7 @@ def main():
             if agent.is_moving:
                 busy_agents = True
                 # Get the new velocity for the moving agent
-                new_vel = agent.find_best_vel(agents, neighbor_limit, vmax)
+                new_vel = agent.find_best_vel(agents, neighbor_limit, the_map)
                 new_vels.append(new_vel)
 
             else:
@@ -140,14 +175,20 @@ def main():
                 new_vels.append(np.zeros(2))
 
         for ind, agent in enumerate(agents):
-            agent.pos += new_vels[ind] * dt
-            agent.vel = new_vels[ind]
+            if agent.is_moving:
 
-            agent.check_route_status()
+                agent.pos += new_vels[ind] * dt
+                agent.vel = new_vels[ind]
+
+                agent.check_route_status(v_max * dt)
+
+    print("Plotting!")
+    print("len(agents[0].pos_hist): ", len(agents[0].pos_hist))
 
 
 
 
+    plot_agent_path(agents,starts, goals, points, v_max, dt)
 
 
 
@@ -155,23 +196,23 @@ def main():
 
 
     # Show the point assignments
-    colors = createColorDictDist()
+    #colors = createColorDictDist()
     #print(init_state.max_time)
     #print(final_state.max_time)
 
     # this is only for plot function
     init_routes = final_state.routes
 
-    for agent_index in range(len(init_routes)):
-        color = colors[agent_index+1]
-        for i in range(init_routes[agent_index].num_points):
-            plt.plot(init_routes[agent_index].route[i].xy[0], init_routes[agent_index].route[i].xy[1], "o", c=color)
+   #for agent_index in range(len(init_routes)):
+   #    color = colors[agent_index+1]
+   #    for i in range(init_routes[agent_index].num_points):
+#   #        plt.plot(init_routes[agent_index].route[i].xy[0], init_routes[agent_index].route[i].xy[1], "o", c=color)
 
-        plt.plot(starts[agent_index].xy[0], starts[agent_index].xy[1], "x", c=color)
-        plt.plot(goals[agent_index].xy[0], goals[agent_index].xy[1], "x", c=color)
+   #    plt.plot(starts[agent_index].xy[0], starts[agent_index].xy[1], "x", c=color)
+   #    plt.plot(goals[agent_index].xy[0], goals[agent_index].xy[1], "x", c=color)
 
 
-    plt.show()
+   #plt.show()
 
 
 def createColorDictDist():
