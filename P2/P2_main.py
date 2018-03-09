@@ -2,6 +2,8 @@ from importJSON2 import Problem
 import numpy as np
 import matplotlib.pyplot as plt
 from State import *
+from agent_p2 import Agent
+
 
 
 def calcDistance(point1, point2):
@@ -94,29 +96,70 @@ def best_neighbor(good_neighborhood):
 
 
 def main():
-
-    # Var ska ska skiftet i routerna göras och tabuerna hållas koll på?
-    # Hur ska skiftena göras?
-    # Vilka skiften ska göras?
-
     the_map = Problem("P22.json")
     points = create_points(the_map.points_of_interest)
     starts = create_points(the_map.start_positions)
     goals = create_points(the_map.goal_positions)
     dt = the_map.vehicle_dt
     v_max = the_map.vehicle_v_max
+
     # Assign each point the the agent with the closest start or goalPoint
     init_state = assign_points(points, starts, goals, v_max)
-    #init_routes = init_state.routes
-    #init_state.find_neighborhood()
 
-    #init_routes[2].two_opt()
+    # Find the routes with tabu search
+    final_state = tabu_search(init_state)
+
+    busy_agents = True
+
+    agents = []
+    radius = 0.5
+    neighbor_limit = 2  # vmax * dt * 10 + radius * 2
+    vmax = the_map.vehicle_v_max
+
+    for ind, route in enumerate(final_state.routes):
+        agents.append(Agent(ind, route.start.xy, route.goal.xy, route.route, radius))
+
+
+
+
+    while busy_agents:
+        busy_agents = False
+        new_vels = []
+
+        for agent in agents:
+            agent.save_pos()
+
+            if agent.is_moving:
+                busy_agents = True
+                # Get the new velocity for the moving agent
+                new_vel = agent.find_best_vel(agents, neighbor_limit, vmax)
+                new_vels.append(new_vel)
+
+            else:
+                # The agent is done and should stand still
+                new_vels.append(np.zeros(2))
+
+        for ind, agent in enumerate(agents):
+            agent.pos += new_vels[ind] * dt
+            agent.vel = new_vels[ind]
+
+            agent.check_route_status()
+
+
+
+
+
+
+
+
+
 
     # Show the point assignments
     colors = createColorDictDist()
-    final_state = tabu_search(init_state)
-    print(init_state.max_time)
-    print(final_state.max_time)
+    #print(init_state.max_time)
+    #print(final_state.max_time)
+
+    # this is only for plot function
     init_routes = final_state.routes
 
     for agent_index in range(len(init_routes)):
@@ -128,16 +171,8 @@ def main():
         plt.plot(goals[agent_index].xy[0], goals[agent_index].xy[1], "x", c=color)
 
 
-
-    #for agent_index in range(len(init_routes)):
-    #    color = colors[agent_index+1]
-    #    for i in range(len(init_routes[agent_index])):
-    #        plt.plot(init_routes[agent_index][i][0], init_routes[agent_index][i][1], "o", c=color)
-    #
-    #    plt.plot(starts[agent_index][0], starts[agent_index][1], "x", c=color)
-    #    plt.plot(goals[agent_index][0], goals[agent_index][1], "x", c=color)
-
     plt.show()
+
 
 def createColorDictDist():
     # It is 29 districts
