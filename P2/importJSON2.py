@@ -1,11 +1,8 @@
-""" Originally from A1 by Jacob Björkman and Alexander Hermansson"""
+""" Originally from A1 by Jacob Björkman and Alex Hermansson"""
 
 import numpy as np
 import json
 import matplotlib.pyplot as plt
-
-#get_ipython().run_line_magic('matplotlib', 'inline')
-plt.rcParams['figure.figsize'] = (15, 20)
 
 class Polygon:
     """Represents a polygon """
@@ -46,7 +43,7 @@ class Polygon:
         """Determines if the given point is in the polygon or not"""
 
         # If the point is within the bounding box we need to do a raycast to be more precise
-        if (self.point_in_box(point)):
+        if self.point_in_box(point):
             return self.point_in_polygon(point)
 
         return False
@@ -63,9 +60,9 @@ class Polygon:
         # Cast a ray from the given point to ray_end, a bit outside of the boundries
         ray_end = [self.x_max + 1, self.y_max + 1]
 
-        intersections = 0;
+        intersections = 0
 
-        for i in range(len(self.vertices) - 1):
+        for i in range(len(self.vertices)):
             if self.lines_intersect(self.vertices[i], self.vertices[i - 1], point, ray_end):
                 intersections += 1
 
@@ -85,7 +82,7 @@ class Polygon:
         o4 = self.orientation(p2, q2, q1)
 
         if o1 != o2 and o3 != o4:
-            return True;
+            return True
 
         return False
 
@@ -96,7 +93,6 @@ class Polygon:
         https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 
         """
-        """Plots the polygon"""
 
         val = (q[1] - p[1]) * (r[0] - q[0]) - (q[0] - p[0]) * (r[1] - q[1])
 
@@ -110,6 +106,7 @@ class Polygon:
             return 2  # counterclockwise
 
     def plot(self, col):
+        """Plots the polygon"""
 
         for i in range(len(self.vertices) - 1):
             # print(self.vertices[i])
@@ -165,24 +162,16 @@ class Problem:
             return True
         return False
 
-    #def plot_map(self):
-    #    """Plots the border polygon and the obstacle polygons together
-    #    with start and goal positions and velocities."""
-    #
-    #    plt.axis("equal")
-    #
-    #    self.bounding_polygon.plot("b")
-    #
-    #    for obstacle in self.obstacles:
-    #        obstacle.plot("r")
-    #
-    #        # plot points
-    #    plt.plot(self.pos_start[0], self.pos_start[1], 'ko')
-    #    plt.plot(self.pos_goal[0], self.pos_goal[1], 'go')
-    #
-    #    # plot velocities
-    #    plot_vector(self.pos_start, self.pos_start + self.vel_start)
-    #    plot_vector(self.pos_goal, self.pos_goal + self.vel_goal)
+    def plot_map(self):
+        """Plots the border polygon and the obstacle polygons together
+        with start and goal positions and velocities."""
+
+        plt.axis("equal")
+
+        self.bounding_polygon.plot("b")
+
+        for obstacle in self.obstacles:
+            obstacle.plot("r")
 
 
 def plot_vector(start, end):
@@ -196,18 +185,18 @@ def plot_vector(start, end):
 
 
 def main():
-    json_in = Problem("P1.json")
+    json_in = Problem("P22.json")
     print("vehicle_L: ", json_in.vehicle_L)
     print("vehicle_a_max: ", json_in.vehicle_a_max)
     json_in.plot_map()
 
-    # p = [20.2, 2.6] #valid
-    # p = [21.2, 2] #not valid
+    p = [5, 5] # valid
+    # p = [9, 7] #not valid
     # p = [30, 40] #not valid
 
     # plt.plot([p[0]],[p[1]], "ro")
 
     # print("Valid point?:")
-    # print(json_in.valid_point(p))
+    print(json_in.valid_point(p))
 
 #main()
