@@ -148,7 +148,7 @@ class Agent(object):
         """ Updates the desired velocity to get to the next poi"""
         v_max = the_map.vehicle_v_max
         dt = the_map.vehicle_dt
-        rot_ang = pi/4
+        rot_ang = pi/8
         rot_mat = np.array([[np.cos(rot_ang), -np.sin(rot_ang)], [np.sin(rot_ang), np.cos(rot_ang)]])
 
 
@@ -163,9 +163,11 @@ class Agent(object):
                 self.v_des = vel_needed
                 break
             else:
-                print("rotating, vel_needed before: ", vel_needed)
+                print("invalid point: ", self.pos + (vel_needed * dt))
+                #print("rotating, vel_needed before: ", vel_needed)
                 vel_needed = np.matmul(rot_mat,  vel_needed)
-                print("rotating, vel_needed after: ", vel_needed)
+                print(vel_needed)
+                #print("rotating, vel_needed after: ", vel_needed)
 
 
 

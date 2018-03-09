@@ -140,6 +140,12 @@ def main():
     goals = create_points(the_map.goal_positions)
     dt = the_map.vehicle_dt
     v_max = the_map.vehicle_v_max
+    invalid_point = np.array([21.47513602, 8.05249862])
+    the_map.plot_map()
+    plt.plot(invalid_point[0], invalid_point[1], "o")
+    print(the_map.valid_point(np.array([[9],[7]])))
+    plt.plot(9, 7, "o")
+    plt.show()
 
     # Assign each point the the agent with the closest start or goalPoint
     init_state = assign_points(points, starts, goals, v_max)
@@ -153,8 +159,9 @@ def main():
     radius = 0.5
     neighbor_limit = 2  # vmax * dt * 10 + radius * 2
 
-    for ind, route in enumerate(final_state.routes):
+    for ind, route in enumerate(final_state.routes[0:1]):
         agents.append(Agent(ind, route.start, route.goal, route.route, radius))
+
 
 
     while busy_agents:
@@ -176,11 +183,19 @@ def main():
 
         for ind, agent in enumerate(agents):
             if agent.is_moving:
-
                 agent.pos += new_vels[ind] * dt
+                the_map.plot_map()
+                plt.plot(-5, 40, "o")
+                plt.plot(40, -5, "o")
+                plt.plot(-5, -5, "o")
+                plt.plot(40, 40, "o")
+                plt.plot(agent.pos[0], agent.pos[1], "o")
+                plt.pause(0.05)
                 agent.vel = new_vels[ind]
 
+
                 agent.check_route_status(v_max * dt)
+    plt.show()
 
     print("Plotting!")
     print("len(agents[0].pos_hist): ", len(agents[0].pos_hist))
