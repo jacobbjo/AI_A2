@@ -101,17 +101,17 @@ def on_point(pos, points, v_max, dt):
     return -1
 
 
-def plot_agent_path(agents, starts, goals, points, v_max, dt):
+def plot_agent_path(agents, starts, goals, points, v_max, dt, the_map):
     colors = createColorDictDist()
     for i in range(len(agents[0].pos_hist)):
         print("Current pos: ", i)
         plt.clf()
         plt.axis("equal")
-        plt.plot(-5, 40, "o")
-        plt.plot(40, -5, "o")
-        plt.plot(-5, -5, "o")
-        plt.plot(40, 40, "o")
-        plot_map(starts, goals, points)
+        #plt.plot(-5, 40, "o")
+        #plt.plot(40, -5, "o")
+        #plt.plot(-5, -5, "o")
+        #plt.plot(40, 40, "o")
+        plot_map(starts, goals, points, the_map)
         for ag_ind, agent in enumerate(agents):
             color = colors[ag_ind + 1]
             pos = agent.pos_hist[i]
@@ -123,7 +123,7 @@ def plot_agent_path(agents, starts, goals, points, v_max, dt):
 
     plt.show()
 
-def plot_map(starts, goals, points):
+def plot_map(starts, goals, points, the_map):
     colors = createColorDictDist()
 
     for i in range(len(starts)):
@@ -132,6 +132,7 @@ def plot_map(starts, goals, points):
         plt.plot(goals[i].xy[0], goals[i].xy[1], "*", c=color)
     for i in range(len(points)):
         plt.plot(points[i].xy[0], points[i].xy[1], "x")
+    the_map.plot_map()
 
 def main():
     the_map = Problem("P22.json")
@@ -143,8 +144,9 @@ def main():
     invalid_point = np.array([21.47513602, 8.05249862])
     the_map.plot_map()
     plt.plot(invalid_point[0], invalid_point[1], "o")
-    print(the_map.valid_point(np.array([[9],[7]])))
-    plt.plot(9, 7, "o")
+
+    print(the_map.valid_point(np.array([28.20703738, 34.70703738])))
+    plt.plot(28.20703738, 34.70703738, "o")
     plt.show()
 
     # Assign each point the the agent with the closest start or goalPoint
@@ -159,7 +161,7 @@ def main():
     radius = 0.5
     neighbor_limit = 2  # vmax * dt * 10 + radius * 2
 
-    for ind, route in enumerate(final_state.routes[0:1]):
+    for ind, route in enumerate(final_state.routes):
         agents.append(Agent(ind, route.start, route.goal, route.route, radius))
 
 
@@ -184,18 +186,18 @@ def main():
         for ind, agent in enumerate(agents):
             if agent.is_moving:
                 agent.pos += new_vels[ind] * dt
-                the_map.plot_map()
-                plt.plot(-5, 40, "o")
-                plt.plot(40, -5, "o")
-                plt.plot(-5, -5, "o")
-                plt.plot(40, 40, "o")
-                plt.plot(agent.pos[0], agent.pos[1], "o")
-                plt.pause(0.05)
+                #the_map.plot_map()
+                #plt.plot(-5, 40, "o")
+                #plt.plot(40, -5, "o")
+                #plt.plot(-5, -5, "o")
+                #plt.plot(40, 40, "o")
+                #plt.plot(agent.pos[0], agent.pos[1], "o")
+                #plt.pause(0.05)
                 agent.vel = new_vels[ind]
 
 
                 agent.check_route_status(v_max * dt)
-    plt.show()
+    #plt.show()
 
     print("Plotting!")
     print("len(agents[0].pos_hist): ", len(agents[0].pos_hist))
@@ -203,7 +205,7 @@ def main():
 
 
 
-    plot_agent_path(agents,starts, goals, points, v_max, dt)
+    plot_agent_path(agents,starts, goals, points, v_max, dt, the_map)
 
 
 
