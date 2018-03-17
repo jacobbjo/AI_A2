@@ -103,6 +103,7 @@ while agents_not_at_goal:
 #for agent in agents:
 #    print(agent.pos_hist)
 #print(num_iterations)
-plot_agent_path(agents, num_iterations)
-plt.show()
+#plot_agent_path(agents, num_iterations)
+#plt.show()
+print(num_iterations)
 
