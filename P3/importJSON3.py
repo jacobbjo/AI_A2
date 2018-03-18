@@ -133,6 +133,7 @@ class Problem:
         self.bounding_polygon = Polygon(self.data["bounding_polygon"])
         self.goal_positions = np.array(self.data["goal_positions"])
         self.points_of_interest = np.array(self.data["points_of_interest"])
+        self.sensor_range = self.data["sensor_range"]
         self.start_positions = np.array(self.data["start_positions"])
         self.vehicle_L = self.data["vehicle_L"]
         self.vehicle_a_max = self.data["vehicle_a_max"]
@@ -185,7 +186,7 @@ def plot_vector(start, end):
 
 
 def main():
-    json_in = Problem("P22.json")
+    json_in = Problem("P23.json")
     print("vehicle_L: ", json_in.vehicle_L)
     print("vehicle_a_max: ", json_in.vehicle_a_max)
     json_in.plot_map()

@@ -1,8 +1,8 @@
-from importJSON2 import Problem
+from importJSON3 import Problem
 import numpy as np
 import matplotlib.pyplot as plt
 from State import *
-from agent_p2 import Agent
+from agent_p3 import Agent
 
 
 
@@ -134,12 +134,13 @@ def plot_map(starts, goals, points):
         plt.plot(points[i].xy[0], points[i].xy[1], "x")
 
 def main():
-    the_map = Problem("P22.json")
+    the_map = Problem("P23.json")
     points = create_points(the_map.points_of_interest)
     starts = create_points(the_map.start_positions)
     goals = create_points(the_map.goal_positions)
     dt = the_map.vehicle_dt
     v_max = the_map.vehicle_v_max
+    sensor_range = the_map.sensor_range
 
     # Assign each point the the agent with the closest start or goalPoint
     init_state = assign_points(points, starts, goals, v_max)
