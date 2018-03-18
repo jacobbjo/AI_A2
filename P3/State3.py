@@ -172,7 +172,8 @@ class State(object):
     def find_neighborhood(self):
         """Tests all possible permutations of routes"""
         neighborhood = []
-        neighborhood_size = 1000
+        # Was 1000
+        neighborhood_size = 500
         for i in range(neighborhood_size):
             neighbor = self.find_neighbor()
             if neighbor != None:

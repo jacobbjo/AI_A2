@@ -1,6 +1,6 @@
 import numpy as np
 from math import *
-from State import Point
+from State3 import Point
 import matplotlib.pyplot as plt
 #from help_functions import *
 

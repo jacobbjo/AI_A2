@@ -1,8 +1,9 @@
 from importJSON3 import Problem
 import numpy as np
 import matplotlib.pyplot as plt
-from State import *
+from State3 import *
 from agent_p3 import Agent
+import random
 
 def find_poi(all_poi, sensor_r):
     poi = []
@@ -52,6 +53,23 @@ def assign_points(points, starts, goals, v_max):
 
     return state
 
+def assign_points_random(points,starts, goals, v_max):
+    routes = []
+    for i in range(len(starts)):
+        routes.append([])
+
+    for point in points:
+        random_index = random.randint(0, len(starts)-1)
+        routes[random_index].append(point)
+    state = State([], v_max)
+
+    for i in range(len(routes)):
+        route = routes[i]
+        route_object = Route(starts[i], goals[i], route)
+        state.add_route(route_object)
+
+    return state
+
 def create_points(point_list):
     points = []
     for i in range(len(point_list)):
@@ -61,7 +79,7 @@ def create_points(point_list):
 
 def tabu_search(state):
     num_rules = 10
-    fail_limit = 10
+    fail_limit = 20
     rule_changes = 0
     filter_out_rules = [None] * num_rules  # Contains tuples as (point, forbidden route index)
     best_state = state
@@ -94,6 +112,8 @@ def tabu_search(state):
             bad_neighborhoods = 0
         else:
             bad_neighborhoods +=1
+            if bad_neighborhoods > 5:
+                print(bad_neighborhoods)
             if bad_neighborhoods > fail_limit:
                 to_continue = False
 
@@ -150,7 +170,7 @@ def plot_map(starts, goals, points, the_map):
 def main():
     the_map = Problem("P23.json")
 
-    points_of_interest = find_poi(the_map.points_of_interest, the_map.sensor_range*2)
+    points_of_interest = find_poi(the_map.points_of_interest, the_map.sensor_range)
     print(len(points_of_interest))
     #print(len(the_map.points_of_interest))
     #print(points_of_interest)
@@ -171,7 +191,7 @@ def main():
     #sensor_range = the_map.sensor_range
 
     # Assign each point the the agent with the closest start or goalPoint
-    init_state = assign_points(points, starts, goals, v_max)
+    init_state = assign_points_random(points, starts, goals, v_max)
     print("Points assigned")
     # Find the routes with tabu search
     final_state = tabu_search(init_state)

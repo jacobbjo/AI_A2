@@ -35,6 +35,23 @@ def assign_points(points, starts, goals, v_max):
 
     return state
 
+def assign_points_random(points,starts, goals, v_max):
+    routes = []
+    for i in range(len(starts)):
+        routes.append([])
+
+    for point in points:
+        random_index = random.randint(0, len(starts)-1)
+        routes[random_index].append(point)
+    state = State([], v_max)
+
+    for i in range(len(routes)):
+        route = routes[i]
+        route_object = Route(starts[i], goals[i], route)
+        state.add_route(route_object)
+
+    return state
+
 
 def create_points(point_list):
     points = []
@@ -134,6 +151,17 @@ def plot_map(starts, goals, points, the_map):
         plt.plot(points[i].xy[0], points[i].xy[1], "x")
     the_map.plot_map()
 
+def plot_agent_path_static(agents, starts, goals, points, the_map):
+    colors = createColorDictDist()
+    plot_map(starts, goals, points, the_map)
+    for i, agent in enumerate(agents):
+        color = colors[i+1]
+        plt.plot([starts[i].xy[0], agent.pos_hist[0][0]],[starts[i].xy[1], agent.pos_hist[0][1]], c=color)
+        for j in range(len(agent.pos_hist)-1):
+            plt.plot([agent.pos_hist[j][0], agent.pos_hist[j+1][0]], [agent.pos_hist[j][1], agent.pos_hist[j+1][1]], c = color)
+        plt.plot([goals[i].xy[0], agent.pos_hist[-1][0]], [goals[i].xy[1], agent.pos_hist[-1][1]], c=color)
+
+
 def main():
     the_map = Problem("P22.json")
     points = create_points(the_map.points_of_interest)
@@ -205,7 +233,9 @@ def main():
 
 
 
-    plot_agent_path(agents,starts, goals, points, v_max, dt, the_map)
+    #plot_agent_path(agents,starts, goals, points, v_max, dt, the_map)
+    plot_agent_path_static(agents,starts, goals, points, the_map)
+    plt.show()
 
 
 
