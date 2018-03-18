@@ -6,11 +6,14 @@ from agent_p3 import Agent
 
 def find_poi(all_poi, sensor_r):
     poi = []
+    all_poi = all_poi.copy()
 
     def remove_close_points(point, all_points, sensor_r):
         close_points = []
+        np_point = np.array(point)
         for a_point in all_points:
-            if np.linalg.norm(point, a_point) < sensor_r:
+            np_apoint = np.array(a_point)
+            if np.linalg.norm(np_point- np_apoint) < sensor_r:
                 close_points.append(a_point)
                 all_points.remove(a_point)
 
@@ -23,7 +26,6 @@ def find_poi(all_poi, sensor_r):
 
 def calcDistance(point1, point2):
     return np.linalg.norm(point2-point1)
-
 
 def assign_points(points, starts, goals, v_max):
     routes = []
@@ -50,14 +52,12 @@ def assign_points(points, starts, goals, v_max):
 
     return state
 
-
 def create_points(point_list):
     points = []
     for i in range(len(point_list)):
-        new_point = Point(point_list[i], i)
+        new_point = Point(np.array(point_list[i]), i)
         points.append(new_point)
     return points
-
 
 def tabu_search(state):
     num_rules = 10
@@ -99,7 +99,6 @@ def tabu_search(state):
 
     return best_state
 
-
 def best_neighbor(good_neighborhood):
     best_neighbor = good_neighborhood[0]
 
@@ -115,18 +114,17 @@ def on_point(pos, points, v_max, dt):
             return ind
     return -1
 
-
-def plot_agent_path(agents, starts, goals, points, v_max, dt):
+def plot_agent_path(agents, starts, goals, points, v_max, dt, the_map):
     colors = createColorDictDist()
     for i in range(len(agents[0].pos_hist)):
         print("Current pos: ", i)
         plt.clf()
         plt.axis("equal")
-        plt.plot(-5, 40, "o")
-        plt.plot(40, -5, "o")
-        plt.plot(-5, -5, "o")
-        plt.plot(40, 40, "o")
-        plot_map(starts, goals, points)
+        #plt.plot(-5, 40, "o")
+        #plt.plot(40, -5, "o")
+        #plt.plot(-5, -5, "o")
+        #plt.plot(40, 40, "o")
+        plot_map(starts, goals, points, the_map)
         for ag_ind, agent in enumerate(agents):
             color = colors[ag_ind + 1]
             pos = agent.pos_hist[i]
@@ -138,7 +136,7 @@ def plot_agent_path(agents, starts, goals, points, v_max, dt):
 
     plt.show()
 
-def plot_map(starts, goals, points):
+def plot_map(starts, goals, points, the_map):
     colors = createColorDictDist()
 
     for i in range(len(starts)):
@@ -147,21 +145,37 @@ def plot_map(starts, goals, points):
         plt.plot(goals[i].xy[0], goals[i].xy[1], "*", c=color)
     for i in range(len(points)):
         plt.plot(points[i].xy[0], points[i].xy[1], "x")
+    the_map.plot_map()
 
 def main():
     the_map = Problem("P23.json")
-    points = create_points(the_map.points_of_interest)
+
+    points_of_interest = find_poi(the_map.points_of_interest, the_map.sensor_range*2)
+    print(len(points_of_interest))
+    #print(len(the_map.points_of_interest))
+    #print(points_of_interest)
+    #
+    # Plot for visualizing the points of interest
+    #the_map.plot_map()
+    #for point in points_of_interest:
+    #    plt.plot(point[0], point[1], "*")
+    #for point in the_map.points_of_interest:
+    #    plt.plot(point[0], point[1], "x")
+    #plt.show()
+
+    points = create_points(points_of_interest)
     starts = create_points(the_map.start_positions)
     goals = create_points(the_map.goal_positions)
     dt = the_map.vehicle_dt
     v_max = the_map.vehicle_v_max
-    sensor_range = the_map.sensor_range
+    #sensor_range = the_map.sensor_range
 
     # Assign each point the the agent with the closest start or goalPoint
     init_state = assign_points(points, starts, goals, v_max)
-
+    print("Points assigned")
     # Find the routes with tabu search
     final_state = tabu_search(init_state)
+    print("found Route")
 
     busy_agents = True
 
@@ -204,7 +218,7 @@ def main():
 
 
 
-    plot_agent_path(agents,starts, goals, points, v_max, dt)
+    plot_agent_path(agents,starts, goals, points, v_max, dt, the_map)
 
 
 
@@ -217,7 +231,7 @@ def main():
     #print(final_state.max_time)
 
     # this is only for plot function
-    init_routes = final_state.routes
+    #init_routes = final_state.routes
 
    #for agent_index in range(len(init_routes)):
    #    color = colors[agent_index+1]
