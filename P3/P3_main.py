@@ -4,7 +4,22 @@ import matplotlib.pyplot as plt
 from State import *
 from agent_p3 import Agent
 
+def find_poi(all_poi, sensor_r):
+    poi = []
 
+    def remove_close_points(point, all_points, sensor_r):
+        close_points = []
+        for a_point in all_points:
+            if np.linalg.norm(point, a_point) < sensor_r:
+                close_points.append(a_point)
+                all_points.remove(a_point)
+
+    while len(all_poi) > 0:
+        point = all_poi[0]
+        poi.append(point)
+        remove_close_points(point, all_poi, sensor_r)
+
+    return poi
 
 def calcDistance(point1, point2):
     return np.linalg.norm(point2-point1)
