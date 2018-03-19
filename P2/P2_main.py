@@ -1,9 +1,8 @@
-from importJSON2 import Problem
+from P2.importJSON2 import Problem
 import numpy as np
 import matplotlib.pyplot as plt
-from State import *
-from agent_p2 import Agent
-
+from Common.state import *
+from Common.agent import Agent
 
 
 def calcDistance(point1, point2):
