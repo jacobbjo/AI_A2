@@ -1,5 +1,6 @@
 from Common.state import *
 import matplotlib.pyplot as plt
+import math
 
 
 def createColorDictDist():
@@ -37,7 +38,7 @@ def createColorDictDist():
     return colorDict
 
 
-def calcDistance(point1, point2):
+def calc_distance(point1, point2):
     return np.linalg.norm(point2-point1)
 
 
@@ -48,6 +49,23 @@ def create_points(point_list):
         points.append(new_point)
     return points
 
+def find_line_eq(point1, point2):
+    """Define a linear equation of the form ax + by + c = 0. Returns the a, b and c on the form (a, b, c)"""
+    a = point1[1] - point2[1]
+    b = point2[0] - point1[0]
+    c = point1[0] * point2[1] - point2[0]*point1[1]
+
+    return (a, b, c)
+
+def dist_point_to_line(point, line_parameters):
+    """Computes the distance from a point to a line. Returns the distance and the closest point on the line"""
+    a = line_parameters[0]
+    b = line_parameters[1]
+    distance = abs(a*point[0] + b*point[1] + line_parameters[2])/math.sqrt(a**2 + b ** 2)
+    close_x = (b * (b*point[0] - a*point[1]) - a*line_parameters[2])/(a**2 + b**2)
+    close_y = (a * (-b*point[0] + a*point[1]) - b*line_parameters[2])/(a**2 + b**2)
+
+    return distance, np.array([close_x, close_y])
 
 def assign_points(points, starts, goals, v_max):
     routes = []
@@ -59,7 +77,7 @@ def assign_points(points, starts, goals, v_max):
         min_index = -1
 
         for j in range(len(starts)):
-            distance = min(calcDistance(points[i].xy, starts[j].xy), calcDistance(points[i].xy, goals[j].xy))
+            distance = min(calc_distance(points[i].xy, starts[j].xy), calc_distance(points[i].xy, goals[j].xy))
             if distance < min_distance:
                 min_distance = distance
                 min_index = j
@@ -73,7 +91,6 @@ def assign_points(points, starts, goals, v_max):
         state.add_route(route_object)
 
     return state
-
 
 def assign_points_random(points,starts, goals, v_max):
     routes = []
@@ -92,16 +109,27 @@ def assign_points_random(points,starts, goals, v_max):
 
     return state
 
-
 def assign_points_line(points, starts, goals, v_max):
     routes = []
 
     for i in range(len(starts)):
         routes.append([])
 
-    for point in points:
-        random_index = random.randint(0, len(starts)-1)
-        routes[random_index].append(point)
+    for i in range(len(points)):
+        min_distance = float("infinity")
+        min_index = -1
+
+        for j in range(len(starts)):
+            line = find_line_eq(starts[j], goals[j])
+            distance, close_point = dist_point_to_line(points[i], line)
+            if not (starts[j][1] < close_point[1] < goals[j][1] or goals[j][1] < close_point[1] < goals[j][1]):
+                distance = min(calc_distance(points[i].xy, starts[j].xy), calc_distance(points[i].xy, goals[j].xy))
+
+            if distance < min_distance:
+                min_distance = distance
+                min_index = j
+
+        routes[min_index].append(points[i])
     state = State([], v_max)
 
     for i in range(len(routes)):
@@ -110,7 +138,6 @@ def assign_points_line(points, starts, goals, v_max):
         state.add_route(route_object)
 
     return state
-
 
 def tabu_search(state):
     num_rules = 10
@@ -218,15 +245,10 @@ def plot_agent_path_static(agents, starts, goals, points, the_map):
         plt.plot([goals[i].xy[0], agent.pos_hist[-1][0]], [goals[i].xy[1], agent.pos_hist[-1][1]], c=color)
 
 
-def find_line_eq(point1, point2):
-    """Define a linear equation of the form y = kx+m. Returns the k and m in the form (k, m)"""
-    k = (point2[1] - point1[1])/(point2[0] - point1[0])
-    m = point1[1] - k * point1[0]
-    return (k, m)
-
-
 
 p1 = np.array([1, 2])
-p2 = np.array([2, 2.5])
+p2 = np.array([3, 4])
+p3 = np.array([0, 3])
 
-print(find_line_eq(p1, p2))
+line = find_line_eq(p1, p3)
+print(dist_point_to_line(p2, line))
