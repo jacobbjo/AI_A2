@@ -1,8 +1,7 @@
-import numpy as np
 import math
-from help_functions import *
-from importJSON1 import Problem
-from agent import Agent
+from P1.help_functions import *
+from P1.importJSON1 import Problem
+from P1.agent_P1 import Agent
 import matplotlib.pyplot as plt
 
 def plot_agents(agents):

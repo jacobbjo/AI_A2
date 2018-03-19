@@ -1,5 +1,5 @@
 from unittest import TestCase
-from agent import Agent
+from P1.agent_P1 import Agent
 import numpy as np
 import math
 

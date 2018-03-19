@@ -1,8 +1,7 @@
 from unittest import TestCase
 from help_functions import *
-from agent import Agent
+from P1.agent_P1 import Agent
 import numpy as np
-import math
 
 
 class TestVel_ang_ok(TestCase):
