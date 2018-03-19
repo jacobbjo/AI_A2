@@ -1,8 +1,8 @@
-from importJSON3 import Problem
+from P3.importJSON3 import Problem
 import numpy as np
 import matplotlib.pyplot as plt
-from State3 import *
-from agent_p3 import Agent
+from Common.state import *
+from Common.agent import Agent
 import random
 
 def find_poi(all_poi, sensor_r):
