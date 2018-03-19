@@ -14,12 +14,8 @@ def main():
     the_map.plot_map()
     plt.plot(invalid_point[0], invalid_point[1], "o")
 
-    print(the_map.valid_point(np.array([28.20703738, 34.70703738])))
-    plt.plot(28.20703738, 34.70703738, "o")
-    plt.show()
-
     # Assign each point the the agent with the closest start or goalPoint
-    init_state = assign_points(points, starts, goals, v_max)
+    init_state = assign_points_line(points, starts, goals, v_max)
 
     # Find the routes with tabu search
     final_state = tabu_search(init_state)

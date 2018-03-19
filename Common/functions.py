@@ -49,6 +49,7 @@ def create_points(point_list):
         points.append(new_point)
     return points
 
+
 def find_line_eq(point1, point2):
     """Define a linear equation of the form ax + by + c = 0. Returns the a, b and c on the form (a, b, c)"""
     a = point1[1] - point2[1]
@@ -56,6 +57,7 @@ def find_line_eq(point1, point2):
     c = point1[0] * point2[1] - point2[0]*point1[1]
 
     return (a, b, c)
+
 
 def dist_point_to_line(point, line_parameters):
     """Computes the distance from a point to a line. Returns the distance and the closest point on the line"""
@@ -66,6 +68,7 @@ def dist_point_to_line(point, line_parameters):
     close_y = (a * (-b*point[0] + a*point[1]) - b*line_parameters[2])/(a**2 + b**2)
 
     return distance, np.array([close_x, close_y])
+
 
 def assign_points(points, starts, goals, v_max):
     routes = []
@@ -92,6 +95,7 @@ def assign_points(points, starts, goals, v_max):
 
     return state
 
+
 def assign_points_random(points,starts, goals, v_max):
     routes = []
     for i in range(len(starts)):
@@ -109,6 +113,7 @@ def assign_points_random(points,starts, goals, v_max):
 
     return state
 
+
 def assign_points_line(points, starts, goals, v_max):
     routes = []
 
@@ -120,9 +125,9 @@ def assign_points_line(points, starts, goals, v_max):
         min_index = -1
 
         for j in range(len(starts)):
-            line = find_line_eq(starts[j], goals[j])
-            distance, close_point = dist_point_to_line(points[i], line)
-            if not (starts[j][1] < close_point[1] < goals[j][1] or goals[j][1] < close_point[1] < goals[j][1]):
+            line = find_line_eq(starts[j].xy, goals[j].xy)
+            distance, close_point = dist_point_to_line(points[i].xy, line)
+            if not (starts[j].xy[1] < close_point[1] < goals[j].xy[1] or goals[j].xy[1] < close_point[1] < starts[j].xy[1]):
                 distance = min(calc_distance(points[i].xy, starts[j].xy), calc_distance(points[i].xy, goals[j].xy))
 
             if distance < min_distance:
@@ -138,6 +143,7 @@ def assign_points_line(points, starts, goals, v_max):
         state.add_route(route_object)
 
     return state
+
 
 def tabu_search(state):
     num_rules = 10
@@ -244,11 +250,3 @@ def plot_agent_path_static(agents, starts, goals, points, the_map):
             plt.plot([agent.pos_hist[j][0], agent.pos_hist[j+1][0]], [agent.pos_hist[j][1], agent.pos_hist[j+1][1]], c = color)
         plt.plot([goals[i].xy[0], agent.pos_hist[-1][0]], [goals[i].xy[1], agent.pos_hist[-1][1]], c=color)
 
-
-
-p1 = np.array([1, 2])
-p2 = np.array([3, 4])
-p3 = np.array([0, 3])
-
-line = find_line_eq(p1, p3)
-print(dist_point_to_line(p2, line))
