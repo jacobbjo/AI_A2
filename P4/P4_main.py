@@ -2,9 +2,7 @@ from P3.importJSON3 import Problem
 from Common.agent import Agent
 from Common.functions import *
 
-# Best: 37.3 proximity
-# Best: 36.3 line
-# Best: 35.0 line plus
+# Best: 38.1
 
 def find_poi(all_poi, sensor_r):
     poi = []
@@ -14,14 +12,10 @@ def find_poi(all_poi, sensor_r):
         close_points = []
         np_point = np.array(point)
         for a_point in all_points:
-            if a_point in close_points:
-                continue
             np_apoint = np.array(a_point)
-            if np.linalg.norm(np_point- np_apoint) <= sensor_r:
+            if np.linalg.norm(np_point- np_apoint) < sensor_r:
                 close_points.append(a_point)
-                #all_points.remove(a_point)
-        for close_point in close_points:
-            all_points.remove(close_point)
+                all_points.remove(a_point)
 
     while len(all_poi) > 0:
         point = all_poi[0]
@@ -29,30 +23,6 @@ def find_poi(all_poi, sensor_r):
         remove_close_points(point, all_poi, sensor_r)
 
     return poi
-
-def find_poi_better(all_poi, sensor_r):
-    pois = []
-    all_poi = all_poi.copy()
-
-    while len(all_poi) > 0:
-        print(len(all_poi))
-        max_poi = []
-        max_neigh = []
-
-        for poi in all_poi:
-            np_poi = np.array(poi)
-            neighbors = []
-            for other_poi in all_poi:  # Adds itself to neighbors as well
-                np_other_poi = np.array(other_poi)
-                if np.linalg.norm(np_poi - np_other_poi) <= sensor_r:
-                    neighbors.append(other_poi)
-            if len(neighbors) > len(max_neigh):
-                max_poi = poi
-                max_neigh = neighbors
-        pois.append(max_poi)
-        for point in max_neigh:
-            all_poi.remove(point)
-    return pois
 
 
 def create_points(point_list):
@@ -64,9 +34,9 @@ def create_points(point_list):
 
 
 def main():
-    the_map = Problem("P23.json")
+    the_map = Problem("P24.json")
 
-    points_of_interest = find_poi_better(the_map.points_of_interest, the_map.sensor_range)
+    points_of_interest = find_poi(the_map.points_of_interest, the_map.sensor_range)
     print(len(points_of_interest))
     #print(len(the_map.points_of_interest))
     #print(points_of_interest)
@@ -87,27 +57,13 @@ def main():
     #sensor_range = the_map.sensor_range
 
     # Assign each point the the agent with the closest start or goalPoint
-    init_state = assign_points_line_plus_plus(points, starts, goals, v_max)
+    init_state = assign_points_line(points, starts, goals, v_max)
     print("Points assigned")
     # Find the routes with tabu search
     colors = createColorDictDist()
-
-    init_routes = init_state.routes
-    ax = plt.gca()
-    for agent_index in range(len(init_routes)):
-        color = colors[agent_index+1]
-        for i in range(init_routes[agent_index].num_points):
-            plt.plot(init_routes[agent_index].route[i].xy[0], init_routes[agent_index].route[i].xy[1], "o", c=color)
-            circlen = plt.Circle((init_routes[agent_index].route[i].xy[0], init_routes[agent_index].route[i].xy[1]), the_map.sensor_range, color=color, fill=False)
-            ax.add_artist(circlen)
-            plt.plot(starts[agent_index].xy[0], starts[agent_index].xy[1], "2", c=color)
-            plt.plot(goals[agent_index].xy[0], goals[agent_index].xy[1], "*", c=color)
+    #for i in range(len(init_state.routes)):
 
 
-    for point in the_map.points_of_interest:
-        plt.plot(point[0], point[1], "x")
-
-    plt.show()
 
     final_state = tabu_search(init_state)
     print("found Route")

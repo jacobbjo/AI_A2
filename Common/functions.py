@@ -145,6 +145,111 @@ def assign_points_line(points, starts, goals, v_max):
     return state
 
 
+def assign_points_line_plus_plus(points, starts, goals, v_max):
+    routes = []
+    points = points.copy()
+    distance_limit = 3
+    for i in range(len(starts)):
+        routes.append([starts[i], goals[i]])
+    counter = 0
+
+    lonely_agents = []
+    while len(lonely_agents) < len(starts):
+        for agent_index in range(len(routes)):
+            if agent_index in lonely_agents:
+                continue
+            agent_route = routes[agent_index]
+            #print(agent_route)
+            close_poi = None
+            min_distance = float("infinity")
+            point_index = 0
+            for p_index in range(len(points)):
+                for line_point_ind in range(len(agent_route)-1):
+                    line = find_line_eq(agent_route[line_point_ind].xy, agent_route[line_point_ind + 1].xy)
+                    distance, close_point = dist_point_to_line(points[p_index].xy, line)
+
+                    if not (starts[agent_index].xy[1] < close_point[1] < goals[agent_index].xy[1] or goals[agent_index].xy[1] < close_point[1] < starts[agent_index].xy[1]):
+                        distance = min(calc_distance(points[p_index].xy, starts[agent_index].xy), calc_distance(points[p_index].xy, goals[agent_index].xy))
+
+                    if distance < min_distance:
+                        min_distance = distance
+                        close_poi = points[p_index]
+                        point_index = line_point_ind
+            if min_distance < distance_limit:
+                routes[agent_index].insert(point_index+1, close_poi)
+                points.remove(close_poi)
+            else:
+                lonely_agents.append(agent_index)
+                print("appending agent: ", agent_index)
+
+    print("points left: ", len(points))
+
+    if len(points) > 0:
+       for i in range(len(points)):
+           min_distance = float("infinity")
+           min_index = -1
+           min_point_index = -1
+           for j in range(len(starts)):
+               point_list = routes[j]
+               for p in range(len(point_list) - 1):
+                   line = find_line_eq(point_list[p].xy, point_list[p + 1].xy)
+                   distance, close_poi = dist_point_to_line(points[i].xy, line)
+                   if not (starts[j].xy[1] < close_poi[1] < goals[j].xy[1] or goals[j].xy[1] < close_poi[1] <
+                           starts[j].xy[1]):
+                       distance = min(calc_distance(points[i].xy, starts[j].xy),
+                                      calc_distance(points[i].xy, goals[j].xy))
+                   counter += 1
+                   if distance < min_distance:
+                       min_distance = distance
+                       min_index = j
+                       min_point_index = p
+
+           routes[min_index].insert(min_point_index + 1, points[i])
+
+    state = State([], v_max)
+    print(counter)
+    for i in range(len(routes)):
+        route = routes[i]
+        route_object = Route(route[0], route[-1], route[1:-1])
+        state.add_route(route_object)
+
+    return state
+
+def assign_points_line_plus(points, starts, goals, v_max):
+    routes = []
+
+    for i in range(len(starts)):
+        routes.append([starts[i], goals[i]])
+    counter = 0
+    for i in range(len(points)):
+        min_distance = float("infinity")
+        min_index = -1
+        min_point_index = -1
+        for j in range(len(starts)):
+            point_list = routes[j]
+            for p in range(len(point_list)-1):
+                line = find_line_eq(point_list[p].xy, point_list[p+1].xy)
+                distance, close_point = dist_point_to_line(points[i].xy, line)
+                if not (starts[j].xy[1] < close_point[1] < goals[j].xy[1] or goals[j].xy[1] < close_point[1] < starts[j].xy[1]):
+                    distance = min(calc_distance(points[i].xy, starts[j].xy), calc_distance(points[i].xy, goals[j].xy))
+                counter += 1
+                if distance < min_distance:
+                    min_distance = distance
+                    min_index = j
+                    min_point_index = p
+
+        routes[min_index].insert(min_point_index+1, points[i])
+    state = State([], v_max)
+    print(counter)
+    for i in range(len(routes)):
+        route = routes[i]
+        route_object = Route(route[0], route[-1], route[1:-1])
+        state.add_route(route_object)
+
+    return state
+
+
+
 def tabu_search(state):
     num_rules = 10
     fail_limit = 20

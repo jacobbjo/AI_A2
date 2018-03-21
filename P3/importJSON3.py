@@ -1,5 +1,6 @@
 """ Originally from A1 by Jacob Björkman and Alex Hermansson"""
 
+
 import numpy as np
 import json
 import matplotlib.pyplot as plt
