@@ -49,7 +49,7 @@ vel = math.atan2(-1, -1)
 the_map = Problem("source/P21.json")
 
 #vmax = the_map.vehicle_v_max
-vmax = 2
+vmax = the_map.vehicle_v_max
 dt = the_map.vehicle_dt
 radius = 0.5
 

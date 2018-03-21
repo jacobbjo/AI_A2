@@ -257,8 +257,6 @@ class Agent(object):
                 print("second point, ", new_point2)
                 return new_point
 
-
-
     def find_intersecting_point(self, path_line, obs_edge):
         x_mat_line1, x_mat_line2, y_mat_line1, y_mat_line2  = np.ones(path_line.shape), np.ones(path_line.shape),\
                                                               np.ones(path_line.shape), np.ones(path_line.shape)

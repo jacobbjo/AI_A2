@@ -1,28 +1,36 @@
-from P3.importJSON3 import Problem
+from P4.importJSON4 import Problem
 from Common.agent import Agent
 from Common.functions import *
 
-# Best: 38.1
+# Best: 25.2
 
-def find_poi(all_poi, sensor_r):
-    poi = []
+def find_poi(all_poi, the_map):
+    pois = []
     all_poi = all_poi.copy()
 
-    def remove_close_points(point, all_points, sensor_r):
-        close_points = []
-        np_point = np.array(point)
-        for a_point in all_points:
-            np_apoint = np.array(a_point)
-            if np.linalg.norm(np_point- np_apoint) < sensor_r:
-                close_points.append(a_point)
-                all_points.remove(a_point)
-
     while len(all_poi) > 0:
-        point = all_poi[0]
-        poi.append(point)
-        remove_close_points(point, all_poi, sensor_r)
+        print(len(all_poi))
+        max_poi = []
+        max_neigh = []
+        i = 0
+        for poi in all_poi:
+            print("punkt: ", i)
+            np_poi = np.array(poi)
+            neighbors = []
+            for other_poi in all_poi:  # Adds itself to neighbors as well
+                np_other_poi = np.array(other_poi)
 
-    return poi
+                if np.linalg.norm(np_poi - np_other_poi) <= the_map.sensor_range:
+                    if the_map.clear_view(np_poi, np_other_poi):
+                        neighbors.append(other_poi)
+            if len(neighbors) > len(max_neigh):
+                max_poi = poi
+                max_neigh = neighbors
+            i += 1
+        pois.append(max_poi)
+        for point in max_neigh:
+            all_poi.remove(point)
+    return pois
 
 
 def create_points(point_list):
@@ -36,7 +44,7 @@ def create_points(point_list):
 def main():
     the_map = Problem("P24.json")
 
-    points_of_interest = find_poi(the_map.points_of_interest, the_map.sensor_range)
+    points_of_interest = find_poi(the_map.points_of_interest, the_map)
     print(len(points_of_interest))
     #print(len(the_map.points_of_interest))
     #print(points_of_interest)
