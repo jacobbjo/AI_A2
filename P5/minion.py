@@ -4,12 +4,11 @@ from math import cos, sin, tan, atan2
 
 class Minion(object):
 
-    def __init__(self, start_pos, formation_start, leader_formation_start, leader_formation_goal):
+    def __init__(self, start_pos, formation_start, leader_formation_start, leader_trajectory_goal):
         self.pos = start_pos
         self.formation_start = formation_start
         self.offset = np.array([formation_start[0] - leader_formation_start[0],
                                 formation_start[1] - leader_formation_start[1]])
-        self.goal = leader_formation_goal + self.offset
         self.pos_hist = [self.pos] # keep track of all positions for later visualization
         self.v_des = np.zeros(2)
         self.vel = np.zeros(2)
@@ -18,13 +17,20 @@ class Minion(object):
 
     def at_goal(self, the_map):
         """ Returns whether the minion is at its goal or not"""
-        if np.linalg.norm(self.goal - self.pos) < the_map.vehicle_v_max * the_map.vehicle_dt:
+        rot_ang = the_map.leader_theta[-1] - np.pi / 2
+        rotation_matrix = np.array([[cos(rot_ang), -sin(rot_ang)], [sin(rot_ang), cos(rot_ang)]])
+        goal = the_map.leader_positions[-1] + np.matmul(rotation_matrix, self.offset)
+        if np.linalg.norm(goal - self.pos) < the_map.vehicle_v_max * the_map.vehicle_dt:
             return True
         return False
 
     def at_start(self, the_map):
         """ Returns whether the minion is at its goal or not"""
-        if np.linalg.norm(self.formation_start - self.pos) < the_map.vehicle_v_max * the_map.vehicle_dt:
+        rot_ang = the_map.leader_theta[0] - np.pi / 2
+        rotation_matrix = np.array([[cos(rot_ang), -sin(rot_ang)], [sin(rot_ang), cos(rot_ang)]])
+        start = the_map.leader_positions[0] + np.matmul(rotation_matrix, self.offset)
+
+        if np.linalg.norm(start - self.pos) < the_map.vehicle_v_max * the_map.vehicle_dt:
             return True
         return False
 
@@ -56,7 +62,7 @@ class Minion(object):
             return True
 
     def get_bound_ang(self, agent_b):
-        """ Returns the left and right boundaries given agent a traveling and agent b being and obstacle. """
+        """ Returns the left and right boundaries given agent a traveling and agent b being an obstacle. """
 
         rad_exp = self.r/10 # How close to each other the agents travel
 
@@ -179,9 +185,12 @@ class Minion(object):
 
         return neighbors
 
-    def move(self, leader_pos, minions, limit, the_map):
+    def move(self, leader_pos, leader_theta, minions, limit, the_map):
 
-        aim_point = leader_pos + self.offset
+        rot_ang = leader_theta - np.pi/2
+        rotation_matrix = np.array([[cos(rot_ang), -sin(rot_ang)], [sin(rot_ang), cos(rot_ang)]])
+        aim_point = leader_pos + np.matmul(rotation_matrix, self.offset)
+        #print(aim_point)
         if not np.linalg.norm(aim_point - self.pos) < the_map.vehicle_v_max * the_map.vehicle_dt:
 
 
