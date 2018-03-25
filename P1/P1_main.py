@@ -3,7 +3,7 @@ from P1.help_functions import *
 from P1.importJSON1 import Problem
 from P1.agent_P1 import Agent
 import matplotlib.pyplot as plt
-from Common.functions import
+from Common.functions import *
 
 def plot_agents(agents):
     plt.clf()
@@ -98,15 +98,12 @@ while agents_not_at_goal:
     print(num_agents_at_goal)
 
 
-filename = "P2.txt"
+filename = "P1.txt"
 write_to_file(filename, agents)
 
 agents_paths = read_from_file(filename)
 
-visited_pois_dt = find_visited_points_dt(agents, points, the_map.vehicle_dt * the_map.vehicle_v_max, the_map)
-print(visited_pois_dt)
-
-make_gif_poi(agents_paths, the_map, points, visited_pois_dt, "Test P2")
+make_gif_poi(agents_paths, the_map, [], [], "Test P1")
 
 #for agent in agents:
 #    print(agent.pos_hist)

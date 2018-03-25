@@ -176,12 +176,12 @@ class Problem:
             obstacle.plot("r")
 
             # plot points
-        plt.plot(self.pos_start[0], self.pos_start[1], 'ko')
-        plt.plot(self.pos_goal[0], self.pos_goal[1], 'go')
+        #plt.plot(self.pos_start[0], self.pos_start[1], 'ko')
+        #plt.plot(self.pos_goal[0], self.pos_goal[1], 'go')
 
         # plot velocities
-        plot_vector(self.pos_start, self.pos_start + self.vel_start)
-        plot_vector(self.pos_goal, self.pos_goal + self.vel_goal)
+        #plot_vector(self.pos_start, self.pos_start + self.vel_start)
+        #plot_vector(self.pos_goal, self.pos_goal + self.vel_goal)
 
 
 def plot_vector(start, end):

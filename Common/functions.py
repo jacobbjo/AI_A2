@@ -437,8 +437,11 @@ def make_gif_poi(agent_paths, the_map, pois, poi_visited, title):
 
     def make_frame_mpl(t):
         b = int(t * 10)
-        for point in poi_visited[b]:
-            plt.plot(point.xy[0], point.xy[1], "x", c="w")
+        try:
+            for point in poi_visited[b]:
+               plt.plot(point.xy[0], point.xy[1], "x", c="w")
+        except IndexError:
+            pass
 
         for ind, point in enumerate(plots):
             point.set_xdata(agent_paths[ind][0][b])
