@@ -371,15 +371,6 @@ def plot_agent_path_static(agents, starts, goals, points, the_map):
             plt.plot([agent.pos_hist[j][0], agent.pos_hist[j+1][0]], [agent.pos_hist[j][1], agent.pos_hist[j+1][1]], c = color)
         plt.plot([goals[i].xy[0], agent.pos_hist[-1][0]], [goals[i].xy[1], agent.pos_hist[-1][1]], c=color)
 
-
-def write_to_file(filename, agents):
-    with open(filename, "w") as file:
-        for agent in agents:
-            points = ""
-            for point in agent.pos_hist:
-                points += str(point[0])+","+str(point[1])+" "
-            file.write(points+"\n")
-
 def check_if_pois_visited(agents, time_step, pois, limit):
     """Returns a list with he pois that the agents visits at the current position"""
     visited_pois = []
@@ -449,6 +440,13 @@ def make_gif_poi(agent_paths, the_map, pois, poi_visited, title):
     animation = mpy.VideoClip(make_frame_mpl, duration=duration)
     animation.write_gif("test.gif", fps=10)
 
+def write_to_file(filename, agents):
+    with open(filename, "w") as file:
+        for agent in agents:
+            points = ""
+            for point in agent.pos_hist:
+                points += str(point[0])+","+str(point[1])+" "
+            file.write(points+"\n")
 
 def read_from_file(filename):
     agents_positions = []
@@ -467,3 +465,32 @@ def read_from_file(filename):
             agents_positions.append(positions)
 
     return agents_positions
+
+
+def write_poi_to_file(filename, pois):
+    with open(filename, "w") as file:
+        for timestep in pois:
+            points = ""
+            for point in timestep:
+                points += str(point.xy[0])+","+str(point.xy[1])+" "
+            file.write(points+"\n")
+
+
+def read_poi_from_file(filename):
+    pois = []
+
+    with open(filename, "r") as file:
+        for line in file:
+            points = []
+            for point in line.split(" "):
+                try:
+                    xy = np.array([float(point.split(",")[0]), float(point.split(",")[1])])
+
+                    points.append(Point(xy, 0))
+
+                except ValueError:
+                    continue
+
+            pois.append(points)
+
+    return pois
