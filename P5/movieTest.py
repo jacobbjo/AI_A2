@@ -11,6 +11,12 @@ y = np.array([1, 2, 3, 4, 5, 6]) /10
 x2 = np.array([1, 2, 3, 4, 5, 6]) /10
 y2 = np.array([6, 5, 4, 3, 2, 1]) /10
 
+poi1 = np.array([1, 2])
+poi2 = np.array([5, 6])
+poi3 = np.array([3, 2])
+
+poi = np.array([[poi1, poi2, poi3], [poi1, poi2], [poi1]])
+
 duration = x.shape[0]/10
 
 fig_mpl, ax = plt.subplots(1,figsize=(5,5), facecolor='white')
@@ -26,6 +32,11 @@ ax.set_xlim(0, 10)
 #line, = ax.plot(xx, zz(0), lw=3)
 point1, = ax.plot(x, y, "o", c="r")
 point2, = ax.plot(x2, y2, "o", c="g")
+line = ax.plot([1, 2], [2, 3], c="b")
+
+scat = plt.scatter
+
+print(ax.lines)
 
 # ANIMATE WITH MOVIEPY (UPDATE THE CURVE FOR EACH t). MAKE A GIF.
 
@@ -35,8 +46,16 @@ def make_frame_mpl(t):
     b = int(t*10)
     point1.set_ydata( y[b])  # <= Update the curve
     point1.set_xdata( x[b])  # <= Update the curve
-    point2.set_ydata( y2[b])
-    point2.set_xdata( x2[b])
+    point2.set_ydata(y2[b])  # <= Update the curve
+    point2.set_xdata(x2[b])
+
+    if b < 3:
+        for point in poi[b]:
+            plt.plot(point[0], point[1], "x")
+    else:
+        for point in poi[b%3]:
+            plt.plot(point[0], point[1], "x", c="w")
+
     return mplfig_to_npimage(fig_mpl) # RGB image of the figure
 
 animation =mpy.VideoClip(make_frame_mpl, duration=duration)

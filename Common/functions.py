@@ -215,6 +215,7 @@ def assign_points_line_plus_plus(points, starts, goals, v_max):
 
     return state
 
+
 def assign_points_line_plus(points, starts, goals, v_max):
     routes = []
 
@@ -247,7 +248,6 @@ def assign_points_line_plus(points, starts, goals, v_max):
         state.add_route(route_object)
 
     return state
-
 
 
 def tabu_search(state):
@@ -354,4 +354,15 @@ def plot_agent_path_static(agents, starts, goals, points, the_map):
         for j in range(len(agent.pos_hist)-1):
             plt.plot([agent.pos_hist[j][0], agent.pos_hist[j+1][0]], [agent.pos_hist[j][1], agent.pos_hist[j+1][1]], c = color)
         plt.plot([goals[i].xy[0], agent.pos_hist[-1][0]], [goals[i].xy[1], agent.pos_hist[-1][1]], c=color)
+
+
+def writeToFile(filename, agents):
+    with open(filename, "w") as file:
+        for agent in agents:
+            points = ""
+            for point in agent.pos_hist:
+                points += str(point[0])+","+str(point[1])+" "
+            file.write(points+"\n")
+
+
 
