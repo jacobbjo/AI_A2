@@ -47,6 +47,8 @@ def main():
 
     print(minions[0].pos_hist)
 
+    write_to_file("P5_path.txt", minions)
+
     plot_movement(the_map.leader_positions, minions, dt_before_start, the_map)
 
 

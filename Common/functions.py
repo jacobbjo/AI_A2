@@ -356,7 +356,7 @@ def plot_agent_path_static(agents, starts, goals, points, the_map):
         plt.plot([goals[i].xy[0], agent.pos_hist[-1][0]], [goals[i].xy[1], agent.pos_hist[-1][1]], c=color)
 
 
-def writeToFile(filename, agents):
+def write_to_file(filename, agents):
     with open(filename, "w") as file:
         for agent in agents:
             points = ""
@@ -365,4 +365,18 @@ def writeToFile(filename, agents):
             file.write(points+"\n")
 
 
+def read_from_file(filename):
+    agents_positions = []
 
+    with open(filename, "r") as file:
+        for line in file:
+            positions = []
+            for position in line.split(" "):
+                try:
+                    positions.append([float(position.split(",")[0]), float(position.split(",")[1])])
+                except ValueError:
+                    continue
+
+            agents_positions.append(positions)
+
+    return agents_positions
