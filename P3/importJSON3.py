@@ -134,6 +134,7 @@ class Problem:
         self.bounding_polygon = Polygon(self.data["bounding_polygon"])
         self.goal_positions = np.array(self.data["goal_positions"])
         self.points_of_interest = self.data["points_of_interest"]
+        self.points_of_interest_np = np.array(self.data["points_of_interest"])
         self.sensor_range = self.data["sensor_range"]
         self.start_positions = np.array(self.data["start_positions"])
         self.vehicle_L = self.data["vehicle_L"]

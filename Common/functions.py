@@ -304,13 +304,13 @@ def best_neighbor(good_neighborhood):
     return best_neighbor
 
 
-def on_point(pos, points, v_max, dt):
+def on_point(pos, points, limit):
     for ind, point in enumerate(points):
         try:
-            if np.linalg.norm(pos - point.xy) < v_max*dt:
+            if np.linalg.norm(pos - point.xy) <limit:
                 return ind
         except AttributeError:
-            if np.linalg.norm(pos - point) < v_max * dt:
+            if np.linalg.norm(pos - point) < limit:
                 return ind
     return -1
 
@@ -381,14 +381,14 @@ def check_if_pois_visited(agents, time_step, pois, limit):
                 visited_pois.append(poi)
         return visited_pois
 
-def find_visited_points_dt(agents, pois, the_map):
+def find_visited_points_dt(agents, pois, limit):
     visited_points_dt = []
     the_pois = pois.copy()
 
     for time_step in range(len(agents[0].pos_hist)):
         visited_at_time_step = []
         for agent in agents:
-            visited_point = on_point(agent.pos_hist[time_step], the_pois, the_map.vehicle_v_max, the_map.vehicle_dt)
+            visited_point = on_point(agent.pos_hist[time_step], the_pois, limit)
             if visited_point != -1:
                 visited_at_time_step.append(the_pois[visited_point])
                 the_pois.pop(visited_point)

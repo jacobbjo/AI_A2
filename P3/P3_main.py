@@ -66,7 +66,7 @@ def create_points(point_list):
 
 def main():
     the_map = Problem("P23.json")
-
+    points = create_points(the_map.points_of_interest_np)
     points_of_interest = find_poi_better(the_map.points_of_interest, the_map.sensor_range)
     print(len(points_of_interest))
     #print(len(the_map.points_of_interest))
@@ -150,7 +150,7 @@ def main():
     print("Plotting!")
     print("len(agents[0].pos_hist): ", len(agents[0].pos_hist))
 
-    visited_pois_dt = find_visited_points_dt(agents, points_of_interest, the_map.sensor_range)
+    visited_pois_dt = find_visited_points_dt(agents, points, the_map.sensor_range)
     print(visited_pois_dt)
 
     #plot_agent_path(agents,starts, goals, points, v_max, dt, the_map)
