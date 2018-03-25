@@ -315,6 +315,18 @@ def on_point(pos, points, limit):
     return -1
 
 
+def on_point_rev(pos, points, limit, the_map):
+    index = []
+    for ind, point in enumerate(points):
+        try:
+            if np.linalg.norm(pos - point.xy) < limit and the_map.clear_view(pos, point.xy):
+                index.append(points[ind])
+        except AttributeError:
+            if np.linalg.norm(pos - point.xy) < limit and the_map.clear_view(pos, point.xy):
+                index.append(points[ind])
+    return index
+
+
 def plot_agent_path(agents, starts, goals, points, v_max, dt, the_map):
     colors = createColorDictDist()
     for i in range(len(agents[0].pos_hist)):
@@ -381,17 +393,18 @@ def check_if_pois_visited(agents, time_step, pois, limit):
                 visited_pois.append(poi)
         return visited_pois
 
-def find_visited_points_dt(agents, pois, limit):
+def find_visited_points_dt(agents, pois, limit, the_map):
     visited_points_dt = []
     the_pois = pois.copy()
 
     for time_step in range(len(agents[0].pos_hist)):
         visited_at_time_step = []
         for agent in agents:
-            visited_point = on_point(agent.pos_hist[time_step], the_pois, limit)
-            if visited_point != -1:
-                visited_at_time_step.append(the_pois[visited_point])
-                the_pois.pop(visited_point)
+            visited_points = on_point_rev(agent.pos_hist[time_step], the_pois, limit, the_map)
+            for vis_point in visited_points:
+                visited_at_time_step.append(vis_point)
+            for vis_point in visited_points:
+                the_pois.remove(vis_point)
         visited_points_dt.append(visited_at_time_step)
 
     return visited_points_dt

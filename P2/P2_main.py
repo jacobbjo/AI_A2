@@ -72,7 +72,7 @@ def main():
 
     agents_paths = read_from_file(filename)
 
-    visited_pois_dt = find_visited_points_dt(agents, points, the_map.vehicle_dt * the_map.vehicle_v_max)
+    visited_pois_dt = find_visited_points_dt(agents, points, the_map.vehicle_dt * the_map.vehicle_v_max, the_map)
     print(visited_pois_dt)
 
     make_gif_poi(agents_paths, the_map, points, visited_pois_dt, "Test P2")

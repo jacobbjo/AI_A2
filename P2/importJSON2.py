@@ -174,6 +174,16 @@ class Problem:
         for obstacle in self.obstacles:
             obstacle.plot("r")
 
+    def clear_view(self, p_from, p_to):
+        """Checks whether there is a clear view from a point to another, i.e. if it is possible to draw a line between
+        them without hitting an obstacle"""
+
+        for obstacle in self.obstacles:
+            for i in range(len(obstacle.vertices)):
+                if obstacle.lines_intersect(obstacle.vertices[i], obstacle.vertices[i - 1], p_from, p_to):
+                    return False
+        return True
+
 
 def plot_vector(start, end):
     """Takes two points as input and plot the vector between them."""

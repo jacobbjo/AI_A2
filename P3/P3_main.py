@@ -155,7 +155,7 @@ def main():
 
     agents_paths = read_from_file(filename)
 
-    visited_pois_dt = find_visited_points_dt(agents, all_points, the_map.sensor_range)
+    visited_pois_dt = find_visited_points_dt(agents, all_points, the_map.sensor_range, the_map)
     print("len visited: ", len(visited_pois_dt))
     print(visited_pois_dt)
 
