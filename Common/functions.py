@@ -370,10 +370,12 @@ def read_from_file(filename):
 
     with open(filename, "r") as file:
         for line in file:
-            positions = []
+            positions = [[], []]
             for position in line.split(" "):
                 try:
-                    positions.append([float(position.split(",")[0]), float(position.split(",")[1])])
+                    positions[0].append(float(position.split(",")[0]))  # x
+                    positions[1].append(float(position.split(",")[1]))  # y
+
                 except ValueError:
                     continue
 
