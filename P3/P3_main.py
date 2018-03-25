@@ -2,6 +2,7 @@ from P3.importJSON3 import Problem
 from Common.agent import Agent
 from Common.functions import *
 
+
 # Best: 37.3 proximity
 # Best: 36.3 line
 # Best: 35.0 line plus
@@ -104,10 +105,10 @@ def main():
             plt.plot(goals[agent_index].xy[0], goals[agent_index].xy[1], "*", c=color)
 
 
-    for point in the_map.points_of_interest:
-        plt.plot(point[0], point[1], "x")
+    #for point in the_map.points_of_interest:
+    #    plt.plot(point[0], point[1], "x")
 
-    plt.show()
+    #plt.show()
 
     final_state = tabu_search(init_state)
     print("found Route")
@@ -149,8 +150,10 @@ def main():
     print("Plotting!")
     print("len(agents[0].pos_hist): ", len(agents[0].pos_hist))
 
+    visited_pois_dt = find_visited_points_dt(agents, points_of_interest, the_map.sensor_range)
+    print(visited_pois_dt)
 
-    plot_agent_path(agents,starts, goals, points, v_max, dt, the_map)
+    #plot_agent_path(agents,starts, goals, points, v_max, dt, the_map)
 
 
     # Show the point assignments

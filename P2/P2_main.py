@@ -2,9 +2,11 @@ from P2.importJSON2 import Problem
 from Common.agent import Agent
 from Common.functions import *
 
+# Best 21.5
 
 def main():
     the_map = Problem("P22.json")
+    points_of_interest = the_map.points_of_interest
     points = create_points(the_map.points_of_interest)
     starts = create_points(the_map.start_positions)
     goals = create_points(the_map.goal_positions)
@@ -65,12 +67,21 @@ def main():
     print("Plotting!")
     print("len(agents[0].pos_hist): ", len(agents[0].pos_hist))
 
+    filename = "P2.txt"
+    write_to_file(filename, agents)
 
+    agents_paths = read_from_file(filename)
+
+    visited_pois_dt = find_visited_points_dt(agents, points, the_map)
+    print(visited_pois_dt)
+
+    make_gif_poi(agents_paths, the_map, points, visited_pois_dt, "Test P2")
 
 
     #plot_agent_path(agents,starts, goals, points, v_max, dt, the_map)
-    plot_agent_path_static(agents,starts, goals, points, the_map)
-    plt.show()
+    #plot_agent_path_static(agents,starts, goals, points, the_map)
+    #plt.show()
+
 
 
 

@@ -1,7 +1,8 @@
 from Common.state import *
 import matplotlib.pyplot as plt
 import math
-
+from moviepy.video.io.bindings import mplfig_to_npimage
+import moviepy.editor as mpy
 
 def createColorDictDist():
     # It is 29 districts
@@ -305,8 +306,12 @@ def best_neighbor(good_neighborhood):
 
 def on_point(pos, points, v_max, dt):
     for ind, point in enumerate(points):
-        if np.linalg.norm(pos - point.xy) < v_max*dt:
-            return ind
+        try:
+            if np.linalg.norm(pos - point.xy) < v_max*dt:
+                return ind
+        except AttributeError:
+            if np.linalg.norm(pos - point) < v_max * dt:
+                return ind
     return -1
 
 
@@ -331,7 +336,6 @@ def plot_agent_path(agents, starts, goals, points, v_max, dt, the_map):
         plt.pause(0.05)
 
     plt.show()
-
 
 def plot_map(starts, goals, points, the_map):
     colors = createColorDictDist()
@@ -363,6 +367,74 @@ def write_to_file(filename, agents):
             for point in agent.pos_hist:
                 points += str(point[0])+","+str(point[1])+" "
             file.write(points+"\n")
+
+def check_if_pois_visited(agents, time_step, pois, limit):
+    """Returns a list with he pois that the agents visits at the current position"""
+    visited_pois = []
+    for agent in agents:
+        agent_pos = agent.pos_hist[time_step]
+        for poi in pois:
+            poi_xy = np.array([poi[0], poi[1]])
+            if np.linalg.norm(agent_pos - poi_xy) <= limit:
+                print(agent_pos)
+                print("Lägger till en punkt")
+                visited_pois.append(poi)
+        return visited_pois
+
+def find_visited_points_dt(agents, pois, the_map):
+    visited_points_dt = []
+    the_pois = pois.copy()
+
+    for time_step in range(len(agents[0].pos_hist)):
+        visited_at_time_step = []
+        for agent in agents:
+            visited_point = on_point(agent.pos_hist[time_step], the_pois, the_map.vehicle_v_max, the_map.vehicle_dt)
+            if visited_point != -1:
+                visited_at_time_step.append(the_pois[visited_point])
+                the_pois.pop(visited_point)
+        visited_points_dt.append(visited_at_time_step)
+
+    return visited_points_dt
+
+def make_gif_poi(agent_paths, the_map, pois, poi_visited, title):
+    fig_mpl, ax = plt.subplots(1, figsize=(10, 10), facecolor='white')
+    duration = len(agent_paths[0][0]) * the_map.vehicle_dt
+    colors = createColorDictDist()
+
+    ax.set_title(title)
+
+    the_map.plot_map()
+
+    for poi in pois:
+        plt.plot(poi.xy[0], poi.xy[1], "x")
+
+    plots = []
+
+    # The paths of the agents should be np.arrays where each row correspond to a position at a given time
+
+    for ind, agent_path in enumerate(agent_paths):
+        # Plots start and goal
+        plt.plot(agent_path[0][0], agent_path[1][0], "2", c=colors[ind + 1])
+        plt.plot(agent_path[0][-1], agent_path[1][-1], "*", c=colors[ind + 1])
+
+        point, = ax.plot(agent_path[0], agent_path[1], "o", c=colors[ind+1])
+        plots.append(point)
+
+
+
+    def make_frame_mpl(t):
+        b = int(t * 10)
+        for point in poi_visited[b]:
+            plt.plot(point.xy[0], point.xy[1], "x", c="w")
+
+        for ind, point in enumerate(plots):
+            point.set_xdata(agent_paths[ind][0][b])
+            point.set_ydata(agent_paths[ind][1][b])
+
+        return mplfig_to_npimage(fig_mpl)  # RGB image of the figure
+
+    animation = mpy.VideoClip(make_frame_mpl, duration=duration)
+    animation.write_gif("test.gif", fps=10)
 
 
 def read_from_file(filename):

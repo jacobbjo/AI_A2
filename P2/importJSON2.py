@@ -133,6 +133,7 @@ class Problem:
         self.bounding_polygon = Polygon(self.data["bounding_polygon"])
         self.goal_positions = np.array(self.data["goal_positions"])
         self.points_of_interest = np.array(self.data["points_of_interest"])
+        #self.points_of_interest_array = self.data["points_of_interest"]
         self.start_positions = np.array(self.data["start_positions"])
         self.vehicle_L = self.data["vehicle_L"]
         self.vehicle_a_max = self.data["vehicle_a_max"]

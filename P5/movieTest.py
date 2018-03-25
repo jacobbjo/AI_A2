@@ -6,7 +6,7 @@ import moviepy.editor as mpy
 # DRAW A FIGURE WITH MATPLOTLIB
 
 x = np.array([1, 2, 3, 4, 5, 6]) /10
-y = np.array([1, 2, 3, 4, 5, 6]) /10
+y = np.array([[1, 2, 3, 4, 5, 6], [6, 5, 4, 3, 2, 1]]) /10
 
 x2 = np.array([1, 2, 3, 4, 5, 6]) /10
 y2 = np.array([6, 5, 4, 3, 2, 1]) /10
@@ -30,8 +30,17 @@ ax.set_ylim(0, 7)
 ax.set_xlim(0, 10)
 
 #line, = ax.plot(xx, zz(0), lw=3)
-point1, = ax.plot(x, y, "o", c="r")
-point2, = ax.plot(x2, y2, "o", c="g")
+
+#point1, = ax.plot(x, y, "o", c="r")
+#point2, = ax.plot(x2, y2, "o", c="g")
+plots = []
+for i in range(2):
+    point, = ax.plot(x, y[i], "o", c="r")
+    plots.append(point)
+
+print(len(plots))
+print(plots)
+
 line = ax.plot([1, 2], [2, 3], c="b")
 
 scat = plt.scatter
@@ -44,10 +53,13 @@ def make_frame_mpl(t):
     #line.set_ydata( zz(2*np.pi*t/duration))  # <= Update the curve
     print("t: ",t)
     b = int(t*10)
-    point1.set_ydata( y[b])  # <= Update the curve
-    point1.set_xdata( x[b])  # <= Update the curve
-    point2.set_ydata(y2[b])  # <= Update the curve
-    point2.set_xdata(x2[b])
+    for i in range(2):
+        plots[i].set_xdata( x[b])
+        plots[i].set_ydata(y[i][b])
+    #point1.set_ydata( y[b])  # <= Update the curve
+    #point1.set_xdata( x[b])  # <= Update the curve
+    #point2.set_ydata(y2[b])  # <= Update the curve
+    #point2.set_xdata(x2[b])
 
     if b < 3:
         for point in poi[b]:
