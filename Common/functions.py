@@ -536,8 +536,6 @@ def read_poi_from_file(filename):
 
                 except ValueError:
                     continue
-
             pois.append(points)
-
     return pois
 
