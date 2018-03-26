@@ -59,56 +59,53 @@ def main():
 
     # Find the routes with tabu search
     colors = createColorDict()
-    final_state = tabu_search(init_state)
-    print("found Route")
 
-    busy_agents = True
+    numIteration = 20
+    bestResutlt = len(read_from_file("P4_best.txt")[0][0])
+    filenameAgents = "P4_best.txt"
+    filenamePOI = "P4_poi_best.txt"
 
-    agents = []
-    radius = 0.5
-    neighbor_limit = 2  # vmax * dt * 10 + radius * 2
+    for i in range(numIteration):
 
-    for ind, route in enumerate(final_state.routes):
-        agents.append(Agent(ind, route.start, route.goal, route.route, radius))
+        print("Iteration ", i, " of ", numIteration)
 
-    while busy_agents:
-        busy_agents = False
-        new_vels = []
+        final_state = tabu_search(init_state)
+        print("found Route")
 
-        for agent in agents:
-            agent.save_pos()
+        agents = []
+        radius = 0.5
+        neighbor_limit = 2  # vmax * dt * 10 + radius * 2
 
-            if agent.is_moving:
-                busy_agents = True
-                # Get the new velocity for the moving agent
-                new_vel = agent.find_best_vel(agents, neighbor_limit, the_map)
-                new_vels.append(new_vel)
+        for ind, route in enumerate(final_state.routes):
+            agents.append(Agent(ind, route.start, route.goal, route.route, radius))
 
-            else:
-                # The agent is done and should stand still
-                new_vels.append(np.zeros(2))
+        find_agent_route(agents, the_map)
+        visited_pois = find_visited_points_dt(agents, all_points, the_map.sensor_range, the_map)
+        print(visited_pois)
 
-        for ind, agent in enumerate(agents):
-            if agent.is_moving:
-
-                agent.pos += new_vels[ind] * dt
-                agent.vel = new_vels[ind]
-
-                agent.check_route_status(v_max * dt)
-
-    print("Plotting!")
-    print("len(agents[0].pos_hist): ", len(agents[0].pos_hist))
+        if len(agents[0].pos_hist) < bestResutlt:
+            print("Found better: ", len(agents[0].pos_hist), ", before: ", bestResutlt)
+            bestResutlt = len(agents[0].pos_hist)
+            write_to_file(filenameAgents, agents)
+            write_poi_to_file(filenamePOI, visited_pois)
+        else:
+            print(len(agents[0].pos_hist), " not better than ", bestResutlt)
 
 
-    filename = "P4.txt"
-    write_to_file(filename, agents)
 
-    agents_paths = read_from_file(filename)
 
-    visited_pois_dt = find_visited_points_dt(agents, all_points, the_map.sensor_range, the_map)
-    print(visited_pois_dt)
 
-    make_gif_poi(agents_paths, the_map, all_points, visited_pois_dt, "Test P4")
+    #print("Plotting!")
+    #print("len(agents[0].pos_hist): ", len(agents[0].pos_hist))
+
+
+    #filename = "P4.txt"
+    #write_to_file(filename, agents)
+    #agents_paths = read_from_file(filename)
+    #visited_pois_dt = find_visited_points_dt(agents, all_points, the_map.sensor_range, the_map)
+    #print(visited_pois_dt)
+
+    #make_gif_poi(agents_paths, the_map, all_points, visited_pois_dt, "Test P4")
 
 
 if __name__ == "__main__":

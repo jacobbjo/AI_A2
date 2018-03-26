@@ -539,3 +539,34 @@ def read_poi_from_file(filename):
             pois.append(points)
     return pois
 
+def find_agent_route(agents, the_map):
+    busy_agents = True
+    dt = the_map.vehicle_dt
+    v_max = the_map.vehicle_v_max
+    neighbor_limit = 2
+
+    while busy_agents:
+        busy_agents = False
+        new_vels = []
+
+        for agent in agents:
+            agent.save_pos()
+
+            if agent.is_moving:
+                busy_agents = True
+                # Get the new velocity for the moving agent
+                new_vel = agent.find_best_vel(agents, neighbor_limit, the_map)
+                new_vels.append(new_vel)
+
+            else:
+                # The agent is done and should stand still
+                new_vels.append(np.zeros(2))
+
+        for ind, agent in enumerate(agents):
+            if agent.is_moving:
+                agent.pos += new_vels[ind] * dt
+
+                agent.vel = new_vels[ind]
+
+                agent.check_route_status(v_max * dt)
+
