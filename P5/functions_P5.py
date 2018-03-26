@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from Common.functions import createColorDictDist
+from Common.functions import createColorDict
 
 def all_at_goal(minions, the_map):
     for minion in minions:
@@ -20,7 +20,7 @@ def move_minions(leader_pos, leader_theta, minions, limit, the_map):
 
 
 def plot_movement(leader_pos, minions, dt_bf_start, the_map):
-    colors = createColorDictDist()
+    colors = createColorDict()
     for i in range(len(minions[0].pos_hist)):
         plt.clf()
         plt.axis("equal")

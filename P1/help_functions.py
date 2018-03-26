@@ -1,8 +1,8 @@
 import numpy as np
 
+
 def get_neighbors(the_agent, agent_list, limit):
     """
-
     :param agent: The agent to whom the neighbors will be returned
     :param agent_list: list of all agents
     :param limit: The maximum distance which are considered neighborhood
@@ -19,7 +19,8 @@ def get_neighbors(the_agent, agent_list, limit):
 
     return neighbors
 
-def sum_range (ranges):
+
+def sum_range(ranges):
     out_ranges = [ranges[0]]
 
     for range in ranges:
