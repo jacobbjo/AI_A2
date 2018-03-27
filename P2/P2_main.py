@@ -5,7 +5,7 @@ from Common.functions import *
 # Best 21.5
 
 def main():
-    the_map = Problem("P22.json")
+    the_map = Problem("P22X.json")
     #points_of_interest = the_map.points_of_interest
     points = create_points(the_map.points_of_interest)
     starts = create_points(the_map.start_positions)
@@ -18,9 +18,9 @@ def main():
 
     numIteration = 20
 
-    bestResutlt = len(read_from_file("P2_best.txt")[0][0])
-    filenameAgents = "P2_best.txt"
-    filenamePOI = "P2_poi_best.txt"
+    bestResutlt = float("infinity")#len(read_from_file("P22X_best.txt")[0][0])
+    filenameAgents = "P22X_best.txt"
+    filenamePOI = "P22X_poi_best.txt"
 
     for i in range(numIteration):
         print("Iteration ", i, " of ", numIteration)

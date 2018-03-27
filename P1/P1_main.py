@@ -98,12 +98,12 @@ while agents_not_at_goal:
     print(num_agents_at_goal)
 
 
-filename = "P1.txt"
+filename = "P21X.txt"
 write_to_file(filename, agents)
 
 agents_paths = read_from_file(filename)
 
-make_gif_poi(agents_paths, the_map, [], [], "Test P1")
+make_gif_poi(agents_paths, the_map, [], [], "Test P21X")
 
 #for agent in agents:
 #    print(agent.pos_hist)

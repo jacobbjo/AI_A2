@@ -42,7 +42,7 @@ def create_points(point_list):
 
 
 def main():
-    the_map = Problem("P24.json")
+    the_map = Problem("P24X.json")
     all_points = create_points(the_map.points_of_interest_np)
     points_of_interest = find_poi(the_map.points_of_interest, the_map)
     print(len(points_of_interest))
@@ -61,9 +61,9 @@ def main():
     colors = createColorDict()
 
     numIteration = 20
-    bestResutlt = len(read_from_file("P4_best.txt")[0][0])
-    filenameAgents = "P4_best.txt"
-    filenamePOI = "P4_poi_best.txt"
+    bestResutlt = float("infinity")#len(read_from_file("P4X_best.txt")[0][0])
+    filenameAgents = "P24X_best.txt"
+    filenamePOI = "P24X_poi_best.txt"
 
     for i in range(numIteration):
 

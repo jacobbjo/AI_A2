@@ -64,7 +64,7 @@ def create_points(point_list):
 
 
 def main():
-    the_map = Problem("P23.json")
+    the_map = Problem("P23X.json")
 
     all_points = create_points(the_map.points_of_interest_np)
     points_of_interest = find_poi_better(the_map.points_of_interest, the_map.sensor_range)
@@ -96,9 +96,9 @@ def main():
 
 
     numIterations = 20
-    bestResutlt = len(read_from_file("P3_best.txt")[0][0])
-    filenameAgents = "P3_best.txt"
-    filenamePOI = "P3_poi_best.txt"
+    bestResutlt = float("infinity")#len(read_from_file("P23X_best.txt")[0][0])
+    filenameAgents = "P23X_best.txt"
+    filenamePOI = "P23X_poi_best.txt"
 
     for i in range(numIterations):
         print("Iteration ", i, " of ", numIterations)
