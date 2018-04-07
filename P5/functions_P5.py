@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
-from Common.functions import createColorDict
-
+from Common.functions import createColorDict, create_points, plot_map
 def all_at_goal(minions, the_map):
     for minion in minions:
         if not minion.at_goal(the_map):
@@ -34,4 +33,12 @@ def plot_movement(leader_pos, minions, dt_bf_start, the_map):
     plt.show()
 
 
+def plot_trajectory_p5(agents_paths, the_map):
+    starts = create_points(the_map.start_positions)
+    plot_map(starts, [], [], the_map)
+    colors = createColorDict()
+    for i, agent_path in enumerate(agents_paths):
+        plt.plot(agent_path[0], agent_path[1], c= colors[i+2])
+
+    plt.show()
 

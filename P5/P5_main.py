@@ -74,4 +74,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    plot_trajectory_p5(read_from_file("P25X.txt"), Problem("P25X.json", "P25_26_traj.json"))
+
+    #main()

@@ -141,5 +141,9 @@ def main():
     #make_gif_poi(agents_paths, the_map, all_points, visited_pois_dt, "Test P3")
 
 
+
+
 if __name__ == "__main__":
-    main()
+    plot_trajectory(read_from_file("P23X_best.txt"), Problem("P23X.json"))
+
+#    main()

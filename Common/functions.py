@@ -400,7 +400,10 @@ def plot_map(starts, goals, points, the_map):
     for i in range(len(starts)):
         color = colors[i+1]
         plt.plot(starts[i].xy[0], starts[i].xy[1], "o", c=color)
-        plt.plot(goals[i].xy[0], goals[i].xy[1], "*", c=color)
+        try:
+            plt.plot(goals[i].xy[0], goals[i].xy[1], "*", c=color)
+        except IndexError:
+            continue
     for i in range(len(points)):
         plt.plot(points[i].xy[0], points[i].xy[1], "x")
     the_map.plot_map()

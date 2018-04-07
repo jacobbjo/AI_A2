@@ -112,4 +112,4 @@ def main():
     #plt.show()
     print(num_iterations)
 
-plot_trajectory(read_from_file("P1.txt"), Problem("source/P21.json"))
+plot_trajectory(read_from_file("P21X.txt"), Problem("source/P21X.json"))

@@ -54,5 +54,7 @@ def main():
     #plt.show()
 
 
-if __name__ == "__main__":
-    main()
+plot_trajectory(read_from_file("P22X_best.txt"), Problem("P22X.json"))
+
+#if __name__ == "__main__":
+    # main()
