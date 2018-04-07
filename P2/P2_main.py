@@ -14,11 +14,11 @@ def main():
     v_max = the_map.vehicle_v_max
 
     # Assign each point the the agent with the closest start or goalPoint
-    init_state = assign_points_line(points, starts, goals, v_max)
+    init_state = assign_points_line_plus_plus(points, starts, goals, v_max)
 
     numIteration = 20
 
-    bestResutlt = float("infinity")#len(read_from_file("P22X_best.txt")[0][0])
+    bestResutlt = len(read_from_file("P22X_best.txt")[0][0])
     filenameAgents = "P22X_best.txt"
     filenamePOI = "P22X_poi_best.txt"
 
@@ -27,10 +27,11 @@ def main():
 
         # Find the routes with tabu search
         final_state = tabu_search(init_state)
+        print("Tabu done")
 
         # Create agents and find find their way to all points of interest while not hitting each other
         agents = []
-        radius = 0.5
+        radius = 0.01
         neighbor_limit = 2  # vmax * dt * 10 + radius * 2
 
         for ind, route in enumerate(final_state.routes):

@@ -350,10 +350,24 @@ def on_point_rev(pos, points, limit, the_map):
     index = []
     for ind, point in enumerate(points):
         try:
-            if np.linalg.norm(pos - point.xy) < limit and the_map.clear_view(pos, point.xy):
+            if np.linalg.norm(pos - point.xy) < limit: #and the_map.clear_view(pos, point.xy):
                 index.append(points[ind])
         except AttributeError:
-            if np.linalg.norm(pos - point.xy) < limit and the_map.clear_view(pos, point.xy):
+            if np.linalg.norm(pos - point.xy) < limit: #and the_map.clear_view(pos, point.xy):
+                index.append(points[ind])
+    return index
+
+def on_point_rev2(pos, points, limit, the_map):
+    """ Determines whether a possition is within limit of a point in a list of points.
+    Returns all points in the list that is within the limit"""
+
+    index = []
+    for ind, point in enumerate(points):
+        try:
+            if np.linalg.norm(pos - point.xy) < limit: #and the_map.clear_view(pos, point.xy):
+                index.append(points[ind])
+        except AttributeError:
+            if np.linalg.norm(pos - point.xy) < limit: #and the_map.clear_view(pos, point.xy):
                 index.append(points[ind])
     return index
 
@@ -436,10 +450,29 @@ def find_visited_points_dt(agents, pois, limit, the_map):
     return visited_points_dt
 
 
+def find_visited_points_dt2(agents_path, pois, limit, the_map):
+    """ Returns a list of when every poi is visited"""
+    visited_points_dt = []
+    the_pois = pois.copy()
+
+    for time_step in range(len(agents_path[0][0])):
+        visited_at_time_step = []
+        for agent in agents_path:
+            agent_point = np.array([agent[0][time_step], agent[1][time_step]])
+            visited_points = on_point_rev2(agent_point, the_pois, limit, the_map)
+            for vis_point in visited_points:
+                visited_at_time_step.append(vis_point)
+            for vis_point in visited_points:
+                the_pois.remove(vis_point)
+        visited_points_dt.append(visited_at_time_step)
+
+    return visited_points_dt
+
+
 def make_gif_poi(agent_paths, the_map, pois, poi_visited, title):
     """Makes a gif"""
 
-    fig_mpl, ax = plt.subplots(1, figsize=(10, 10), facecolor='white')
+    fig_mpl, ax = plt.subplots(1, figsize=(5, 5), facecolor='white')
     duration = len(agent_paths[0][0]) * the_map.vehicle_dt
     colors = createColorDict()
 
@@ -553,6 +586,7 @@ def find_agent_route(agents, the_map):
             agent.save_pos()
 
             if agent.is_moving:
+                print("Agent moving: ", agent.index)
                 busy_agents = True
                 # Get the new velocity for the moving agent
                 new_vel = agent.find_best_vel(agents, neighbor_limit, the_map)

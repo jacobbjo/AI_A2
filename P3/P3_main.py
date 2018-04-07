@@ -109,7 +109,7 @@ def main():
         busy_agents = True
 
         agents = []
-        radius = 0.5
+        radius = 0.01
         neighbor_limit = 2  # vmax * dt * 10 + radius * 2
 
         for ind, route in enumerate(final_state.routes):
