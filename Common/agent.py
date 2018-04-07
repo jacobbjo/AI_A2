@@ -130,11 +130,6 @@ class Agent(object):
 
         self.update_des_vel(the_map)
         pos_vels = self.get_avoidance_vels(neighbors, the_map)
-
-        # REMOVE THIS BEFORE FINAL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-        #if len(pos_vels) == 0:
-            #print("Agent ", str(self.index), " har inget val")
-
         min_vel_distance = float("infinity")
         best_vel = np.zeros(2)
 
@@ -190,8 +185,7 @@ class Agent(object):
             self.is_moving = False
 
     def is_obs_on_path(self, the_map):
-        """Returns the closest obstacle on the straight path to the first poi, None if the path is clear
-        """
+        """ Returns the closest obstacle on the straight path to the first poi, None if the path is clear """
         intersec_point = []
         intersec_vert_ind = []
         intersec_obstacles = []
@@ -205,7 +199,6 @@ class Agent(object):
 
                     # Find the intersecting point and save it, save the edge
                     intersec_point.append(self.find_intersecting_point(path_line, obs_edge))
-                    #intersec_edges.append(obs_edg)
                     intersec_vert_ind.append(i)
                     intersec_obstacles.append(obstacle)
 
@@ -222,9 +215,6 @@ class Agent(object):
                 close_edge_vert_index = point_index
 
         # Finds the corner of the edge closest to the poi-point
-
-
-        #close_index = intersec_vert_ind[close_edge_vert_index]
         col_obstacle = intersec_obstacles[close_edge_vert_index]
         point_on_col_edge_index = intersec_vert_ind[close_edge_vert_index]
 
@@ -244,20 +234,17 @@ class Agent(object):
 
         if np.linalg.norm(col_obstacle.vertices[point_on_col_edge_index] - self.poi[0].xy) < np.linalg.norm(col_obstacle.vertices[point_on_col_edge_index-1] - self.poi[0].xy):
             if the_map.valid_point(new_point):
-                print("First point, ", new_point)
                 return new_point
             else:
-                print("second point, ", new_point2)
                 return new_point2
         else:
             if the_map.valid_point(new_point2):
-                print("First point", new_point)
                 return new_point2
             else:
-                print("second point, ", new_point2)
                 return new_point
 
     def find_intersecting_point(self, path_line, obs_edge):
+        """ Finds the point where the lines cross"""
         x_mat_line1, x_mat_line2, y_mat_line1, y_mat_line2  = np.ones(path_line.shape), np.ones(path_line.shape),\
                                                               np.ones(path_line.shape), np.ones(path_line.shape)
         x_mat_line1[:, 0] = path_line[:, 0]
@@ -275,45 +262,4 @@ class Agent(object):
             np.array([[np.linalg.det(path_line), np.linalg.det(y_mat_line1)], [np.linalg.det(obs_edge),
                                                                                np.linalg.det(y_mat_line2)]]))
         return np.array([x_det/div_det, y_det/div_det])
-
-
-#point1 = np.array([0, 0])
-#point2 = np.array([3, 3])
-#int_point1 = np.array([1, 3])
-#int_point2 = np.array([3, 1])
-#no_int_point1 = np.array([2, 3])
-#no_int_point2 = np.array([1, 4])
-#
-#path_line = np.array([point1, point2])
-#obs_edge = np.array([int_point1, int_point2])
-#
-#x_mat_line1, x_mat_line2, y_mat_line1, y_mat_line2 = np.ones(path_line.shape), np.ones(path_line.shape), \
-#                                                     np.ones(path_line.shape), np.ones(path_line.shape)
-#
-#x_mat_line1[:, 0] = path_line[:, 0]
-#x_mat_line2[:, 0] = obs_edge[:, 0]
-#y_mat_line1[:, 0] = path_line[:, 1]
-#y_mat_line2[:, 0] = obs_edge[:, 1]
-#
-#x_diff = np.array([path_line[0, 0] - path_line[1, 0], obs_edge[0, 0] - obs_edge[1, 0]])
-#y_diff = np.array([path_line[0, 1] - path_line[1, 1], obs_edge[0, 1] - obs_edge[1, 1]])
-#
-#diff_mat = np.array([x_diff, y_diff])
-#print("diff ", np.linalg.det(diff_mat))
-#
-#div_det = np.linalg.det(np.array([[np.linalg.det(x_mat_line1), np.linalg.det(y_mat_line1)], [np.linalg.det(x_mat_line2),
-#                                                                                         np.linalg.det(y_mat_line2)]]))
-#x_det = np.linalg.det(np.array([[np.linalg.det(path_line), np.linalg.det(x_mat_line1)], [np.linalg.det(obs_edge),
-#                                                                                         np.linalg.det(x_mat_line2)]]))
-#y_det = np.linalg.det(np.array([[np.linalg.det(path_line), np.linalg.det(y_mat_line1)], [np.linalg.det(obs_edge),
-#                                                                                         np.linalg.det(y_mat_line2)]]))
-#
-#
-#print(x_det/div_det)
-#print(y_det/div_det)
-#
-#
-#print(x_mat_line1)
-#print(y_mat_line2)
-
 

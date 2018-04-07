@@ -1,8 +1,6 @@
 import numpy as np
 from math import *
 import matplotlib.pyplot as plt
-#from help_functions import *
-
 
 class Agent(object):
 
@@ -117,11 +115,6 @@ class Agent(object):
 
         self.update_des_vel(v_max)
         pos_vels = self.get_avoidance_vels(neighbors, v_max)
-
-        # REMOVE THIS BEFORE FINAL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-        #if len(pos_vels) == 0:
-            #print("Agent ", str(self.index), " har inget val")
-
         min_vel_distance = float("infinity")
         best_vel = np.zeros(2)
 
@@ -142,16 +135,3 @@ class Agent(object):
         self.v_des = vel_needed
 
 
-# Test code
-#def main():
-    #hej = Agent(np.array([1, 1]), np.array([10, 10]), 0.5)
-    #hej2 = Agent(np.array([2, 3]), np.array([10, 10]), 0.5, np.array([1, -1]))
-
-    #best = hej.find_best_vel([hej2], 1.2)
-    #print("Lenght best: ", np.linalg.norm(best))
-    #print(best)
-
-    # hej.get_bound_ang(hej2)
-
-
-#main()

@@ -164,8 +164,9 @@ class Problem:
 
         plt.axis("equal")
         self.bounding_polygon.plot("b")
+
         for indx in range(len(self.leader_positions)-1):
-            plt.plot(self.leader_positions[indx], self.leader_positions[indx+1], c="g")
+            plt.plot(np.array(self.trajectory["x"]), np.array(self.trajectory["y"]), c="g")
 
 
 def plot_vector(start, end):

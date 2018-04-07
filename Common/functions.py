@@ -4,7 +4,7 @@ import math
 from moviepy.video.io.bindings import mplfig_to_npimage
 import moviepy.editor as mpy
 
-def createColorDictDist():
+def createColorDict():
     # It is 29 districts
     colorDict = {}
     colorDict[1] = "#0000ff" # Blue
@@ -40,10 +40,12 @@ def createColorDictDist():
 
 
 def calc_distance(point1, point2):
+    """ Calculates distance between two points"""
     return np.linalg.norm(point2-point1)
 
 
 def create_points(point_list):
+    """ Creates Point objects and returns a list of them """
     points = []
     for i in range(len(point_list)):
         new_point = Point(point_list[i], i)
@@ -72,6 +74,7 @@ def dist_point_to_line(point, line_parameters):
 
 
 def assign_points(points, starts, goals, v_max):
+    """ Assigns points to the agents based on proximity to start and goal of the agent """
     routes = []
     for i in range(len(starts)):
         routes.append([])
@@ -98,6 +101,7 @@ def assign_points(points, starts, goals, v_max):
 
 
 def assign_points_random(points,starts, goals, v_max):
+    """ Assigns points to the agents randomly"""
     routes = []
     for i in range(len(starts)):
         routes.append([])
@@ -116,6 +120,7 @@ def assign_points_random(points,starts, goals, v_max):
 
 
 def assign_points_line(points, starts, goals, v_max):
+    """ Assigns points to the agents based on proximity to a line between start and goal of the agent """
     routes = []
 
     for i in range(len(starts)):
@@ -146,7 +151,58 @@ def assign_points_line(points, starts, goals, v_max):
     return state
 
 
+def assign_points_line_plus(points, starts, goals, v_max):
+    """
+    Assigns points to the agents based on proximity to the current path the agent will travel. Starts by just a
+    simple path between start and goal of the agent and throughout the iterations the path goes through other
+    points of interest. Assignment is done by iterating over the points of interest to be assigned.
+    """
+
+    routes = []
+
+    for i in range(len(starts)):
+        routes.append([starts[i], goals[i]])
+    counter = 0
+    for i in range(len(points)):
+        min_distance = float("infinity")
+        min_index = -1
+        min_point_index = -1
+
+        for j in range(len(starts)):
+            point_list = routes[j]
+
+            for p in range(len(point_list)-1):
+                line = find_line_eq(point_list[p].xy, point_list[p+1].xy)
+                distance, close_point = dist_point_to_line(points[i].xy, line)
+
+                if not (starts[j].xy[1] < close_point[1] < goals[j].xy[1] or goals[j].xy[1] < close_point[1] < starts[j].xy[1]):
+                    distance = min(calc_distance(points[i].xy, starts[j].xy), calc_distance(points[i].xy, goals[j].xy))
+                counter += 1
+
+                if distance < min_distance:
+                    min_distance = distance
+                    min_index = j
+                    min_point_index = p
+
+        routes[min_index].insert(min_point_index+1, points[i])
+
+    state = State([], v_max)
+
+    for i in range(len(routes)):
+        route = routes[i]
+        route_object = Route(route[0], route[-1], route[1:-1])
+        state.add_route(route_object)
+
+    return state
+
+
 def assign_points_line_plus_plus(points, starts, goals, v_max):
+    """
+    Assigns points to the agents based on proximity to the current path the agent will travel. Starts by just a
+    simple path between start and goal of the agent and throughout the iterations the path goes through other
+    points of interest. Assignment is done by iterating over the AGENTS and assigning one point each. This results in
+    an even distribution of POIs between the agents.
+    """
     routes = []
     points = points.copy()
     distance_limit = 3
@@ -217,41 +273,9 @@ def assign_points_line_plus_plus(points, starts, goals, v_max):
     return state
 
 
-def assign_points_line_plus(points, starts, goals, v_max):
-    routes = []
-
-    for i in range(len(starts)):
-        routes.append([starts[i], goals[i]])
-    counter = 0
-    for i in range(len(points)):
-        min_distance = float("infinity")
-        min_index = -1
-        min_point_index = -1
-        for j in range(len(starts)):
-            point_list = routes[j]
-            for p in range(len(point_list)-1):
-                line = find_line_eq(point_list[p].xy, point_list[p+1].xy)
-                distance, close_point = dist_point_to_line(points[i].xy, line)
-                if not (starts[j].xy[1] < close_point[1] < goals[j].xy[1] or goals[j].xy[1] < close_point[1] < starts[j].xy[1]):
-                    distance = min(calc_distance(points[i].xy, starts[j].xy), calc_distance(points[i].xy, goals[j].xy))
-                counter += 1
-                if distance < min_distance:
-                    min_distance = distance
-                    min_index = j
-                    min_point_index = p
-
-        routes[min_index].insert(min_point_index+1, points[i])
-    state = State([], v_max)
-    print(counter)
-    for i in range(len(routes)):
-        route = routes[i]
-        route_object = Route(route[0], route[-1], route[1:-1])
-        state.add_route(route_object)
-
-    return state
-
-
 def tabu_search(state):
+    """ Test permutations of agent assignment to see if we can find a state that is better """
+
     num_rules = 10
     fail_limit = 20
     rule_changes = 0
@@ -295,6 +319,8 @@ def tabu_search(state):
 
 
 def best_neighbor(good_neighborhood):
+    """ Finds the best neighbor from the neighborhood """
+
     best_neighbor = good_neighborhood[0]
 
     for neighbor in good_neighborhood:
@@ -305,6 +331,8 @@ def best_neighbor(good_neighborhood):
 
 
 def on_point(pos, points, limit):
+    """ Determines whether a possition is within limit of a point in a list of points
+    Returns after finding a single point even if there is more """
     for ind, point in enumerate(points):
         try:
             if np.linalg.norm(pos - point.xy) <limit:
@@ -316,6 +344,9 @@ def on_point(pos, points, limit):
 
 
 def on_point_rev(pos, points, limit, the_map):
+    """ Determines whether a possition is within limit of a point in a list of points.
+    Returns all points in the list that is within the limit"""
+
     index = []
     for ind, point in enumerate(points):
         try:
@@ -328,15 +359,13 @@ def on_point_rev(pos, points, limit, the_map):
 
 
 def plot_agent_path(agents, starts, goals, points, v_max, dt, the_map):
-    colors = createColorDictDist()
+    """ plots every step in the agents path  """
+
+    colors = createColorDict()
     for i in range(len(agents[0].pos_hist)):
         print("Current pos: ", i)
         plt.clf()
         plt.axis("equal")
-        #plt.plot(-5, 40, "o")
-        #plt.plot(40, -5, "o")
-        #plt.plot(-5, -5, "o")
-        #plt.plot(40, 40, "o")
         plot_map(starts, goals, points, the_map)
         for ag_ind, agent in enumerate(agents):
             color = colors[ag_ind + 1]
@@ -349,8 +378,10 @@ def plot_agent_path(agents, starts, goals, points, v_max, dt, the_map):
 
     plt.show()
 
+
 def plot_map(starts, goals, points, the_map):
-    colors = createColorDictDist()
+    """ Plots the map """
+    colors = createColorDict()
 
     for i in range(len(starts)):
         color = colors[i+1]
@@ -362,7 +393,9 @@ def plot_map(starts, goals, points, the_map):
 
 
 def plot_agent_path_static(agents, starts, goals, points, the_map):
-    colors = createColorDictDist()
+    """only plots the lines between the points"""
+
+    colors = createColorDict()
     plot_map(starts, goals, points, the_map)
     for i, agent in enumerate(agents):
         color = colors[i+1]
@@ -371,20 +404,22 @@ def plot_agent_path_static(agents, starts, goals, points, the_map):
             plt.plot([agent.pos_hist[j][0], agent.pos_hist[j+1][0]], [agent.pos_hist[j][1], agent.pos_hist[j+1][1]], c = color)
         plt.plot([goals[i].xy[0], agent.pos_hist[-1][0]], [goals[i].xy[1], agent.pos_hist[-1][1]], c=color)
 
-def check_if_pois_visited(agents, time_step, pois, limit):
-    """Returns a list with he pois that the agents visits at the current position"""
-    visited_pois = []
-    for agent in agents:
-        agent_pos = agent.pos_hist[time_step]
-        for poi in pois:
-            poi_xy = np.array([poi[0], poi[1]])
-            if np.linalg.norm(agent_pos - poi_xy) <= limit:
-                print(agent_pos)
-                print("Lägger till en punkt")
-                visited_pois.append(poi)
-        return visited_pois
+#def check_if_pois_visited(agents, time_step, pois, limit):
+#   """Returns a list with he pois that the agents visits at the current position"""
+#   visited_pois = []
+#   for agent in agents:
+#       agent_pos = agent.pos_hist[time_step]
+#       for poi in pois:
+#           poi_xy = np.array([poi[0], poi[1]])
+#           if np.linalg.norm(agent_pos - poi_xy) <= limit:
+#               print(agent_pos)
+#               print("Lägger till en punkt")
+#               visited_pois.append(poi)
+##       return visited_pois
+
 
 def find_visited_points_dt(agents, pois, limit, the_map):
+    """ Returns a list of when every poi is visited"""
     visited_points_dt = []
     the_pois = pois.copy()
 
@@ -400,10 +435,13 @@ def find_visited_points_dt(agents, pois, limit, the_map):
 
     return visited_points_dt
 
+
 def make_gif_poi(agent_paths, the_map, pois, poi_visited, title):
+    """Makes a gif"""
+
     fig_mpl, ax = plt.subplots(1, figsize=(10, 10), facecolor='white')
     duration = len(agent_paths[0][0]) * the_map.vehicle_dt
-    colors = createColorDictDist()
+    colors = createColorDict()
 
     ax.set_title(title)
 
@@ -424,8 +462,6 @@ def make_gif_poi(agent_paths, the_map, pois, poi_visited, title):
         point, = ax.plot(agent_path[0], agent_path[1], "o", c=colors[ind+1])
         plots.append(point)
 
-
-
     def make_frame_mpl(t):
         b = int(t * 10)
         try:
@@ -443,7 +479,9 @@ def make_gif_poi(agent_paths, the_map, pois, poi_visited, title):
     animation = mpy.VideoClip(make_frame_mpl, duration=duration)
     animation.write_gif("test.gif", fps=10)
 
+
 def write_to_file(filename, agents):
+    """ Writes the path to a file """
     with open(filename, "w") as file:
         for agent in agents:
             points = ""
@@ -451,7 +489,9 @@ def write_to_file(filename, agents):
                 points += str(point[0])+","+str(point[1])+" "
             file.write(points+"\n")
 
+
 def read_from_file(filename):
+    """ Reads the paths from a file """
     agents_positions = []
 
     with open(filename, "r") as file:
@@ -471,6 +511,8 @@ def read_from_file(filename):
 
 
 def write_poi_to_file(filename, pois):
+    """ write poi list to file"""
+
     with open(filename, "w") as file:
         for timestep in pois:
             points = ""
@@ -480,6 +522,7 @@ def write_poi_to_file(filename, pois):
 
 
 def read_poi_from_file(filename):
+    """ Reads poi list from file """
     pois = []
 
     with open(filename, "r") as file:
@@ -493,17 +536,48 @@ def read_poi_from_file(filename):
 
                 except ValueError:
                     continue
-
             pois.append(points)
-
     return pois
+
+def find_agent_route(agents, the_map):
+    busy_agents = True
+    dt = the_map.vehicle_dt
+    v_max = the_map.vehicle_v_max
+    neighbor_limit = 2
+
+    while busy_agents:
+        busy_agents = False
+        new_vels = []
+
+        for agent in agents:
+            agent.save_pos()
+
+            if agent.is_moving:
+                busy_agents = True
+                # Get the new velocity for the moving agent
+                new_vel = agent.find_best_vel(agents, neighbor_limit, the_map)
+                new_vels.append(new_vel)
+
+            else:
+                # The agent is done and should stand still
+                new_vels.append(np.zeros(2))
+
+        for ind, agent in enumerate(agents):
+            if agent.is_moving:
+                agent.pos += new_vels[ind] * dt
+
+                agent.vel = new_vels[ind]
+
+                agent.check_route_status(v_max * dt)
+
+
 
 
 def plot_trajectory(agents_paths, the_map):
     starts = create_points(the_map.start_positions)
     goals = create_points(the_map.goal_positions)
     plot_map(starts, goals, [], the_map)
-    colors = createColorDictDist()
+    colors = createColorDict()
     for i, agent_path in enumerate(agents_paths):
         plt.plot(agent_path[0], agent_path[1], c= colors[i+1])
 
