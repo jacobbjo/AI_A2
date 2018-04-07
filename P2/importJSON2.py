@@ -174,6 +174,9 @@ class Problem:
         for obstacle in self.obstacles:
             obstacle.plot("r")
 
+        for poi in self.points_of_interest:
+            plt.plot(poi[0], poi[1], "x")
+
     def clear_view(self, p_from, p_to):
         """Checks whether there is a clear view from a point to another, i.e. if it is possible to draw a line between
         them without hitting an obstacle"""
