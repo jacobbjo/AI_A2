@@ -40,75 +40,76 @@ def collisions(agents):
             if np.linalg.norm(agents[i].pos - agents[j].pos) < 1:
                 print("KOLLISION MELLAN AGENT ", str(i)," OCH AGENT ", str(j))
 
-left = math.atan2(-1, -3)
-right = math.atan2(-2, -1)
-vel = math.atan2(-1, -1)
+#left = math.atan2(-1, -3)
+#right = math.atan2(-2, -1)
+#vel = math.atan2(-1, -1)
+def main():
+    the_map = Problem("source/P21.json")
 
-the_map = Problem("source/P21.json")
+    #vmax = the_map.vehicle_v_max
+    vmax = the_map.vehicle_v_max
+    dt = the_map.vehicle_dt
+    radius = 0.5
 
-#vmax = the_map.vehicle_v_max
-vmax = the_map.vehicle_v_max
-dt = the_map.vehicle_dt
-radius = 0.5
+    neighbor_limit = vmax * dt * 10 + radius * 2
 
-neighbor_limit = vmax * dt * 10 + radius * 2
+    # -------- Creates the agents and stores them in list
+    agents = []
+    for i in range(len(the_map.start_positions)):
+        agents.append(Agent(i, np.array(the_map.start_positions[i]), np.array(the_map.goal_positions[i]), radius))
 
-# -------- Creates the agents and stores them in list
-agents = []
-for i in range(len(the_map.start_positions)):
-    agents.append(Agent(i, np.array(the_map.start_positions[i]), np.array(the_map.goal_positions[i]), radius))
+    # -------- Loops through the agents and finds their new position
+    agents_not_at_goal = True
 
-# -------- Loops through the agents and finds their new position
-agents_not_at_goal = True
-
-# --------- plots the agents
-#plot_agents(agents)
-
-num_iterations = 0
-while agents_not_at_goal:
-    num_agents_at_goal = 0
-    pos_differences = []
-    new_vels = []
-    #print(len(agents))
-    for agent in agents:
-        agent.pos_hist.append(np.copy(agent.pos))
-        if round(np.linalg.norm(agent.goal - agent.pos), 2) < vmax * dt:
-        #if abs(agent.pos[0] - agent.goal[0]) < vmax * dt and abs(agent.pos[1] - agent.goal[1]) < vmax * dt:
-            # If an agents already is on goal we do not want to change its position
-            num_agents_at_goal += 1
-            pos_differences.append(np.zeros(2))
-            new_vels.append(np.zeros(2))
-            continue
-
-        neighbors = get_neighbors(agent, agents, neighbor_limit)
-        new_vel = agent.find_best_vel(neighbors, vmax)
-
-        pos_change = new_vel * dt
-        pos_differences.append(pos_change)
-        new_vels.append(new_vel)
-
-    for i in range(len(agents)):
-        agents[i].pos += pos_differences[i]
-        agents[i].vel = new_vels[i]
+    # --------- plots the agents
     #plot_agents(agents)
-    if num_agents_at_goal == len(agents):
-        agents_not_at_goal = False
-    collisions(agents)
-    num_iterations += 1
-    print(num_agents_at_goal)
+
+    num_iterations = 0
+    while agents_not_at_goal:
+        num_agents_at_goal = 0
+        pos_differences = []
+        new_vels = []
+        #print(len(agents))
+        for agent in agents:
+            agent.pos_hist.append(np.copy(agent.pos))
+            if round(np.linalg.norm(agent.goal - agent.pos), 2) < vmax * dt:
+            #if abs(agent.pos[0] - agent.goal[0]) < vmax * dt and abs(agent.pos[1] - agent.goal[1]) < vmax * dt:
+                # If an agents already is on goal we do not want to change its position
+                num_agents_at_goal += 1
+                pos_differences.append(np.zeros(2))
+                new_vels.append(np.zeros(2))
+                continue
+
+            neighbors = get_neighbors(agent, agents, neighbor_limit)
+            new_vel = agent.find_best_vel(neighbors, vmax)
+
+            pos_change = new_vel * dt
+            pos_differences.append(pos_change)
+            new_vels.append(new_vel)
+
+        for i in range(len(agents)):
+            agents[i].pos += pos_differences[i]
+            agents[i].vel = new_vels[i]
+        #plot_agents(agents)
+        if num_agents_at_goal == len(agents):
+            agents_not_at_goal = False
+        collisions(agents)
+        num_iterations += 1
+        print(num_agents_at_goal)
 
 
-filename = "P1.txt"
-write_to_file(filename, agents)
+    filename = "P1.txt"
+    write_to_file(filename, agents)
 
-agents_paths = read_from_file(filename)
+    agents_paths = read_from_file(filename)
 
-make_gif_poi(agents_paths, the_map, [], [], "Test P1")
+    make_gif_poi(agents_paths, the_map, [], [], "Test P1")
 
-#for agent in agents:
-#    print(agent.pos_hist)
-#print(num_iterations)
-#plot_agent_path(agents, num_iterations)
-#plt.show()
-print(num_iterations)
+    #for agent in agents:
+    #    print(agent.pos_hist)
+    #print(num_iterations)
+    #plot_agent_path(agents, num_iterations)
+    #plt.show()
+    print(num_iterations)
 
+plot_trajectory(read_from_file("P1.txt"), Problem("source/P21.json"))

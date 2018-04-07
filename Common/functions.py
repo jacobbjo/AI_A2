@@ -354,7 +354,7 @@ def plot_map(starts, goals, points, the_map):
 
     for i in range(len(starts)):
         color = colors[i+1]
-        plt.plot(starts[i].xy[0], starts[i].xy[1], "2", c=color)
+        plt.plot(starts[i].xy[0], starts[i].xy[1], "o", c=color)
         plt.plot(goals[i].xy[0], goals[i].xy[1], "*", c=color)
     for i in range(len(points)):
         plt.plot(points[i].xy[0], points[i].xy[1], "x")
@@ -497,3 +497,21 @@ def read_poi_from_file(filename):
             pois.append(points)
 
     return pois
+
+
+def plot_trajectory(agents_paths, the_map):
+    starts = create_points(the_map.start_positions)
+    goals = create_points(the_map.goal_positions)
+    plot_map(starts, goals, [], the_map)
+    colors = createColorDictDist()
+    for i, agent_path in enumerate(agents_paths):
+        plt.plot(agent_path[0], agent_path[1], c= colors[i+1])
+
+    plt.show()
+
+
+
+
+
+
+
