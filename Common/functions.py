@@ -571,8 +571,6 @@ def find_agent_route(agents, the_map):
                 agent.check_route_status(v_max * dt)
 
 
-
-
 def plot_trajectory(agents_paths, the_map):
     starts = create_points(the_map.start_positions)
     goals = create_points(the_map.goal_positions)
